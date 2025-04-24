@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:healthmvp/data/services/notifications_service.dart';
 
-
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -14,7 +12,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-    @override
+  @override
   void initState() {
     super.initState();
     // Initialize notifications when the screen loads
@@ -57,17 +55,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const Center(
             child: CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(
-                  'https://www.gstatic.com/flutter-onestack-prototype/genui/example_1.jpg'),
+              // backgroundImage: NetworkImage(
+              //     'https://www.gstatic.com/flutter-onestack-prototype/genui/example_1.jpg'),
             ),
           ),
           const SizedBox(height: 10),
           const Text(
-            'Kevin Henry',
+            'Manas',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Text(
-            'kevinhenry482@gmail.com',
+            'manas@gmail.com',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 20),
@@ -75,33 +73,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.person_outline,
             text: 'My Account',
             onTap: () {
-                NotificationHelper.scheduleNotification(
-                    "Notification test",
-                    "my app Notification",
-                    5,
-                  );
-            //  onCreate();  // Show notification on tap
+              NotificationHelper.scheduleNotification(
+                "Notification test",
+                "my app Notification",
+                5,
+              );
+              //  onCreate();  // Show notification on tap
             },
           ),
           ProfileOption(
             icon: Icons.settings,
             text: 'Notification Settings',
             onTap: () {
-             // onCreate();  // Show notification on tap
+              // onCreate();  // Show notification on tap
             },
           ),
           ProfileOption(
             icon: Icons.help_outline,
             text: 'Help Center',
             onTap: () {
-           //   onCreate();  // Show notification on tap
+              //   onCreate();  // Show notification on tap
             },
           ),
           ProfileOption(
             icon: Icons.logout,
             text: 'Log Out',
             onTap: () {
-           //   onCreate();  // Show notification on tap
+              //   onCreate();  // Show notification on tap
             },
           ),
         ],
@@ -109,6 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+
 class ProfileOption extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -138,13 +137,13 @@ class ProfileOption extends StatelessWidget {
               children: [
                 Icon(icon, color: Colors.black54),
                 const SizedBox(width: 16),
-                Text(
-                  text,
-                  style: const TextStyle(fontSize: 16),
-                ),
+                Text(text, style: const TextStyle(fontSize: 16)),
                 const Spacer(),
-                const Icon(Icons.arrow_forward_ios,
-                    size: 16, color: Colors.black54),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: Colors.black54,
+                ),
               ],
             ),
           ),

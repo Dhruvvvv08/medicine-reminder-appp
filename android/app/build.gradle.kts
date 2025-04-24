@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -20,6 +21,7 @@ android {
     }
 
     defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.healthmvp"
         minSdk = 21 // Make sure this is at least 21
         targetSdk = flutter.targetSdkVersion
@@ -29,6 +31,12 @@ android {
 
     buildTypes {
         getByName("release") {
+              isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro"
+        )
             signingConfig = signingConfigs.getByName("debug")
         }
     }

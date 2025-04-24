@@ -7,17 +7,17 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
 
-
-
 //In this file all the API requests are created, we will call these requests for all the APIs
 
 //const String baseUrl = 'https://inspectionapi.austere.biz/inspection/api';
-const String baseUrl = 'http://192.168.1.42:3002/api';
+const String baseUrl = 'http://192.168.29.249:3002/api';
 http.Client client = http.Client();
 // final LocalStorageService _storageService = LocalStorageService();
 
 Map<String, String> appendAccessTokenWith(
-    Map<String, String> headers, String accessToken) {
+  Map<String, String> headers,
+  String accessToken,
+) {
   final Map<String, String> requestHeaders = {
     'Authorization': accessToken,
     // 'Content-Type': "application/json",
@@ -31,20 +31,18 @@ Future<http.Response> fetchData({
   required String url,
   String queryParams = "",
   bool isCustomUrl = false,
-  bool addToken = true,
-  String? token,
 }) async {
-  Map<String, String> requestHeaders;
+  Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
 
-  /// String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
+  String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
 
   // if (addToken) {
   //   requestHeaders = appendAccessTokenWith({}, sessionToken);
   // }
 
   // else {
-  requestHeaders = {};
-  //}
+  requestHeaders.addAll({'Authorization': 'Bearer ${sessionToken ?? ""}'});
+  // }
 
   if (queryParams.isNotEmpty) {
     url += "?$queryParams";
@@ -117,15 +115,16 @@ Future<http.Response> postDataa<T>({
   required String url,
   required T body,
 }) async {
-  Map<String, String> requestHeaders;
+  Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
 
-  requestHeaders = {
-    'Content-Type': 'application/json',
-  };
-  requestHeaders.addAll({
-    'Authorization':
-        'Bearer ${SharedPref.pref!.getString(Preferences.login_token) ?? ""}'
-  });
+  String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
+
+  // if (addToken) {
+  //   requestHeaders = appendAccessTokenWith({}, sessionToken);
+  // }
+
+  // else {
+  requestHeaders.addAll({'Authorization': 'Bearer ${sessionToken ?? ""}'});
 
   final response = await client.post(
     Uri.parse(baseUrl + url),
@@ -142,9 +141,7 @@ Future<http.Response> postDataawithouttoken<T>({
 }) async {
   Map<String, String> requestHeaders;
 
-  requestHeaders = {
-    'Content-Type': 'application/json',
-  };
+  requestHeaders = {'Content-Type': 'application/json'};
   // requestHeaders.addAll({
   //   'Authorization':
   //       'Bearer ${SharedPref.pref!.getString(Preferences.login_token) ?? ""}'
@@ -164,9 +161,7 @@ Future<http.Response> postDataawithtoken<T>({
   required T body,
   String? token, // Add the token as an optional parameter
 }) async {
-  Map<String, String> requestHeaders = {
-    'Content-Type': 'application/json',
-  };
+  Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
 
   // If a token is provided, add it to the Authorization header
   // requestHeaders.addAll({
@@ -397,11 +392,13 @@ Future<http.Response> uploadImageDataAndData({
   // request.headers.addAll(
   //     {'Authorization': SharedPref.pref!.getString(Preferences.token) ?? ""});
 
-  request.files.add(http.MultipartFile.fromBytes(
-    "file",
-    imageData,
-    filename: filename, // Use the provided filename for the image
-  ));
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      "file",
+      imageData,
+      filename: filename, // Use the provided filename for the image
+    ),
+  );
 
   request.fields["district"] = district;
   request.fields["block"] = block;
@@ -423,13 +420,17 @@ Future<http.Response> uploadImageData({
 }) async {
   final request = http.MultipartRequest("POST", Uri.parse(url));
 
-  request.files.add(http.MultipartFile.fromBytes(
-    "file",
-    imageData,
-    filename: filename,
-    contentType:
-        MediaType('image', 'jpeg'), // Use the provided filename for the image
-  ));
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      "file",
+      imageData,
+      filename: filename,
+      contentType: MediaType(
+        'image',
+        'jpeg',
+      ), // Use the provided filename for the image
+    ),
+  );
 
   //-------Send request
 
@@ -442,24 +443,19 @@ Future<http.Response> uploadImageData({
 Future<http.Response> getdataaa({
   required String url,
   bool isCustomUrl = false,
-    bool addToken = true,
+  bool addToken = true,
 }) async {
-  Map<String, String> requestHeaders = {
-    'Content-Type': 'application/json',
-  };
+  Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
 
-   String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
+  String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
 
   // if (addToken) {
   //   requestHeaders = appendAccessTokenWith({}, sessionToken);
   // }
 
   // else {
-  requestHeaders.addAll({
-    'Authorization':
-        'Bearer ${sessionToken ?? ""}'
-  });
- // }
+  requestHeaders.addAll({'Authorization': 'Bearer ${sessionToken ?? ""}'});
+  // }
 
   final response = await client.get(
     isCustomUrl ? Uri.parse(url) : Uri.parse(baseUrl + url),

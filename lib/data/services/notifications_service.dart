@@ -38,7 +38,7 @@ class NotificationHelper {
       body,
       tz.TZDateTime.now(tz.local).add(Duration(seconds: userDayInput)),
       notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 

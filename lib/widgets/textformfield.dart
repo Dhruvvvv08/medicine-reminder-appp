@@ -115,7 +115,6 @@ class _TitledInputFieldState extends State<TitledInputField> {
         //     )),
         const SizedBox(height: 6),
         TextFormField(
-          
           autofillHints: widget.autoFillHints,
           maxLength: widget.maxLength,
           enabled: widget.enable,
@@ -173,7 +172,7 @@ class _TitledInputFieldState extends State<TitledInputField> {
             ),
             errorBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(color: Color(0xff2B338C), width: 2),
+              borderSide: BorderSide(color: Colors.red, width: 2),
             ),
             labelStyle: TextStyle(
               color: !widget.enable ? Colors.grey : Colors.black,
@@ -220,7 +219,7 @@ class _TitledInputFieldState extends State<TitledInputField> {
                     ),*/,
                     ),
             errorStyle: const TextStyle(
-              color: Color(0xff2B338C),
+              color: Colors.red,
               fontWeight: FontWeight.w500,
               fontSize: 12,
             ),

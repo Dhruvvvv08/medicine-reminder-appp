@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
+import 'package:healthmvp/ViewModel/dashboard_viewmodel.dart';
 import 'package:healthmvp/widgets/customdropdown.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -11,12 +13,23 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  DashboardViewmodel? dashboardmodell;
+
   String? val;
-  String?val2;
+  String? val2;
+
+  @override
+  void initState() {
+    dashboardmodell = Provider.of<DashboardViewmodel>(context, listen: false);
+    dashboardmodell?.getdashboarddata(context);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<DashboardViewmodel>(context);
     return Scaffold(
-      backgroundColor:Colors.white,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -52,7 +65,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Expanded(
                       child: CustomDropdown(
-                        data: ["Paracetamol", "Crocine", "All Medicine"].toSet().toList()??[],
+                        data:
+                            [
+                              "Paracetamol",
+                              "Crocine",
+                              "All Medicine",
+                            ].toSet().toList() ??
+                            [],
 
                         onChanged: (String? newValue) {
                           val = newValue;
@@ -64,7 +83,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     SizedBox(width: 40),
                     Expanded(
                       child: CustomDropdown(
-                        data: ["Today", "This week", "This Month"].toSet().toList()??[],
+                        data:
+                            [
+                              "Today",
+                              "This week",
+                              "This Month",
+                            ].toSet().toList() ??
+                            [],
 
                         onChanged: (String? newValue) {
                           val2 = newValue;
@@ -83,58 +108,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEFF7FF),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      CircularPercentIndicator(
-                        radius: 60.0,
-                        lineWidth: 10.0,
-                        percent: 0.68,
-                        center: const Text(
-                          "68%",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        circularStrokeCap: CircularStrokeCap.round,
-                        backgroundColor: Colors.grey.shade200,
-                        progressColor: const Color(0xFF5E57EA),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildLegendCircle(Colors.green, 'Week 01'),
-                          const SizedBox(width: 16),
-                          _buildLegendCircle(Colors.blue, 'Week 02'),
-                          const SizedBox(width: 16),
-                          _buildLegendCircle(Colors.orange, 'Week 03'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.all(16),
+                //   decoration: BoxDecoration(
+                //     color: const Color(0xFFEFF7FF),
+                //     borderRadius: BorderRadius.circular(16),
+                //   ),
+                //   child: Column(
+                //     children: [
+                //       CircularPercentIndicator(
+                //         radius: 60.0,
+                //         lineWidth: 10.0,
+                //         percent: 0.68,
+                //         center: const Text(
+                //           "68%",
+                //           style: TextStyle(fontWeight: FontWeight.bold),
+                //         ),
+                //         circularStrokeCap: CircularStrokeCap.round,
+                //         backgroundColor: Colors.grey.shade200,
+                //         progressColor: const Color(0xFF5E57EA),
+                //       ),
+                //       const SizedBox(height: 16),
+                //       // Row(
+                //       //   mainAxisAlignment: MainAxisAlignment.center,
+                //       //   children: [
+                //       //     _buildLegendCircle(Colors.green, 'Week 01'),
+                //       //     const SizedBox(width: 16),
+                //       //     _buildLegendCircle(Colors.blue, 'Week 02'),
+                //       //     const SizedBox(width: 16),
+                //       //     _buildLegendCircle(Colors.orange, 'Week 03'),
+                //       //   ],
+                //       // )
+                //       // ,
+                //     ],
+                //   ),
+                // ),
                 const SizedBox(height: 24),
 
                 // Analysis Section
-                const Text(
-                  'Analysis',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                // const Text(
+                //   'Analysis',
+                //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                // ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 20,
                   runSpacing: 12,
 
                   children: [
-                    _buildAnalysisBox('Active', '01'),
-                    _buildAnalysisBox('Completed Task', '02'),
-                    _buildAnalysisBox('Incomplete', '01'),
-                     _buildAnalysisBox('Total', '05'),
-                    _buildAnalysisBox('Reward', '02'),
+                    _buildAnalysisBox(
+                      'Taken',
+                      '${controller.dashboardata?.data.reminderCounts.taken}',
+                    ),
+                    _buildAnalysisBox(
+                      'Missed',
+                      '${controller.dashboardata?.data.reminderCounts.missed}',
+                    ),
+                    _buildAnalysisBox(
+                      'Pending',
+                      '${controller.dashboardata?.data.reminderCounts.pending}',
+                    ),
+                    _buildAnalysisBox(
+                      'Total',
+                      '${controller.dashboardata?.data.reminderCounts.total}',
+                    ),
+                    _buildAnalysisBox(
+                      'Points',
+                      '${controller.dashboardata?.data.streakPoints}',
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -196,7 +237,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildAnalysisBox(String title, String value) {
     return Container(
-      width:150 ,
+      width: 150,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFFEFF7FF),
