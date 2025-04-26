@@ -5,8 +5,11 @@ import 'package:healthmvp/view/Auth/login_screen.dart';
 import 'package:healthmvp/view/home/Dashbaord/dashboard.dart';
 import 'package:healthmvp/view/home/Medicine/Medicine_schedule.dart';
 import 'package:healthmvp/view/home/Medicine/add_medicine.dart';
+import 'package:healthmvp/view/home/Medicine/create_reminder.dart';
+import 'package:healthmvp/view/home/Medicine/show_all_medicine.dart';
 import 'package:healthmvp/view/home/Medicine/show_medicine.dart';
 import 'package:healthmvp/view/home/Medicine/show_medicine_schdule.dart';
+import 'package:healthmvp/view/setting/Profile.dart';
 import 'package:healthmvp/view/setting/Setting_screen.dart';
 
 class Botoomnavbar extends StatefulWidget {
@@ -31,9 +34,10 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
         children: [
           Center(child: DashboardScreen()),
           Center(child: MedicineSchedulePage()),
-          Center(child: AddMedicine()),
-          Center(child: MedicineScreen()),
-          Center(child: ProfileScreen()),
+          Center(child: ModernReminderScreen()),
+          //Center(child: MedicineScreen()),
+          Center(child: MedicineListScreen()),
+          Center(child: Profile()),
         ],
       ),
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

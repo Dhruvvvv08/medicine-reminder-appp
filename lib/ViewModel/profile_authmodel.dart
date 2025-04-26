@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:healthmvp/models/dashboard/dashboard.dart';
-import 'package:intl/intl.dart';
+import 'package:healthmvp/models/profileModel/profilemodel.dart';
 
-class DashboardViewmodel extends ChangeNotifier {
-  bool isdashboardloading = false;
-  DashboardData? dashboardata;
-    String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+class ProfileAuthmodel extends ChangeNotifier {
+  bool profileloading = false;
+  ProfileModelData? profiledatamodel;
   Future getdashboarddata(BuildContext context) async {
-    isdashboardloading = true;
+    profileloading = true;
 
-    var response = await ApiManager().dashboardmedicinedata(
-      date : date,
-
-    );
+    var response = await ApiManager().getprofileinfo();
     if (response.isSuccessed!) {
       print("doneeeee");
-      dashboardata = response.data;
-      print(dashboardata?.data.mostTakenMedicines);
-      isdashboardloading = false;
+      profiledatamodel = response.data;
+      print(profiledatamodel?.data.name);
+      profileloading = false;
       //   Navigator.push(context, MaterialPageRoute(builder: (context)=> OtpScreen()));
       notifyListeners();
     } else {

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
 import 'package:healthmvp/ViewModel/dashboard_viewmodel.dart';
+import 'package:healthmvp/ViewModel/profile_authmodel.dart';
 import 'package:healthmvp/ViewModel/reminder_authviewmodel.dart';
 import 'package:healthmvp/ViewModel/show_medicine_authmodel.dart';
 import 'package:healthmvp/data/services/shared_pref_service.dart';
@@ -29,9 +30,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-tz.initializeTimeZones();
+  tz.initializeTimeZones();
 
   // Initialize SharedPreferences
   SharedPref.pref = await SharedPreferences.getInstance();
@@ -52,6 +52,7 @@ tz.initializeTimeZones();
         ChangeNotifierProvider(create: (_) => AddmedicineAuthmodel()),
         ChangeNotifierProvider(create: (_) => ReminderAuthviewmodel()),
         ChangeNotifierProvider(create: (_) => ShowMedicineAuthmodel()),
+        ChangeNotifierProvider(create: (_) => ProfileAuthmodel()),
       ],
       child: MyApp(),
     ),

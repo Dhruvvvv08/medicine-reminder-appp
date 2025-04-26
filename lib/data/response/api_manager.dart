@@ -6,6 +6,7 @@ import 'package:healthmvp/models/AuthModel/register_model.dart';
 import 'package:healthmvp/models/AuthModel/verify_otp_model.dart';
 import 'package:healthmvp/models/HomeModel/AddMedicine/MedicineName.dart';
 import 'package:healthmvp/models/dashboard/dashboard.dart';
+import 'package:healthmvp/models/profileModel/profilemodel.dart';
 import 'package:healthmvp/models/remindersmodel/reminder_model.dart';
 import 'package:healthmvp/models/userMedicineModel/submitaddmedicinemodel.dart';
 import 'package:healthmvp/models/userMedicineModel/usermedicinemodel.dart';
@@ -148,10 +149,13 @@ class ApiManager {
     }
   }
 
-  Future<OnComplete<DashboardData>> dashboardmedicinedata() async {
+  Future<OnComplete<DashboardData>> dashboardmedicinedata({
+   String? date,
+
+  }) async {
     try {
       ApiResponse response = await apiRequest(
-        request: getdataaa(url: "/reminders/dashboard"),
+        request: getdataaa(url: "/reminders/dashboard?date=${date}"),
       );
 
       if (response.success == true) {
@@ -165,7 +169,26 @@ class ApiManager {
       return OnComplete.error("");
     }
   }
+  Future<OnComplete<ProfileModelData>> getprofileinfo({
+   String? date,
 
+  }) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: getdataaa(url: "/users/profile"),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(ProfileModelData.fromJson(response.result));
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("");
+    }
+  }
   Future<OnComplete<ReminderModel>> getremindersofmedicine({
     String? date,
     status,
