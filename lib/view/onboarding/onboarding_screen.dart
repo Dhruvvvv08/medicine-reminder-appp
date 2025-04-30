@@ -16,20 +16,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       "title": "Dive Into Your Profound Journey Of Wellness",
       "description":
           "Track your medications with ease and stay consistent on your wellness journey.",
-      "image": "images/healthmvp.jpeg",
+      "image": "images/HealthMVP Primary Logo (Color Var. 1) PNG.png",
     },
     {
       "title": "Achieve More With Alerts: Stay Ahead Of The Curve",
       "description":
           "Timely alerts ensure you never miss a dose, even on your busiest days.",
-      "image": "images/healthmvp.jpeg",
+      "image": "images/HealthMVP Primary Logo (Color Var. 1) PNG.png",
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFF2563EB),
       body: SafeArea(
         child: Stack(
           children: [
@@ -102,8 +102,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 Icons.arrow_back,
                                 Colors.white,
                                 _currentPage > 0
-                                    ?  Colors.deepPurple
-                                                                        : Colors.deepPurple.shade100,
+                                    ? Color(0xFF2563EB)
+                                    : Colors.deepPurple.shade100,
                                 _currentPage > 0
                                     ? () {
                                       _pageController.previousPage(
@@ -124,9 +124,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               _circularButton(
                                 Icons.arrow_forward,
                                 Colors.white,
-                          _currentPage < 0
-                                    ?  Colors.deepPurple.shade100
-                                                                        : Colors.deepPurple,
+                                _currentPage < 0
+                                    ? Color.fromARGB(255, 64, 95, 162)
+                                    : Color(0xFF2563EB),
                                 _currentPage < onboardingData.length - 1
                                     ? () {
                                       _pageController.nextPage(
@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       );
                                     }
                                     : () {
-                                      context.go('/loginscreen');
+                                      context.go('/auth');
                                     },
                               ),
                             ],
@@ -153,10 +153,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               top: 10,
               right: 20,
               child: TextButton(
-                onPressed: () => context.go('/loginscreen'),
+                onPressed: () => context.go('/auth'),
                 child: const Text(
                   "Skip",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -189,7 +189,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: isActive ? 16 : 8,
       height: 8,
       decoration: BoxDecoration(
-        color: isActive ? Colors.deepPurple : Colors.grey[300],
+        color: isActive ? Color(0xFF2563EB) : Colors.grey[300],
         borderRadius: BorderRadius.circular(4),
       ),
     );

@@ -14,3 +14,4 @@ Color k5d53ff = Color(0xff5d53ff);
 Color kfe9bb1 = Color(0xfffe9bb1);
 Color kd1d0d3 = Color(0xffd1d0d3);
 Color k7dddf2 = Color(0xff7dddf2);
+Color k2563EB = Color (0xFF2563EB);

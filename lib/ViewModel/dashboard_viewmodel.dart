@@ -29,6 +29,7 @@ class DashboardViewmodel extends ChangeNotifier {
           duration: const Duration(seconds: 3),
         ),
       );
+        isdashboardloading = false;
       notifyListeners();
     }
   }

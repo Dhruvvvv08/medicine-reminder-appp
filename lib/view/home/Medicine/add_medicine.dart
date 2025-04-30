@@ -9,10 +9,12 @@ import 'package:healthmvp/Utils/textstyles.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
 import 'package:healthmvp/services/notification_service.dart';
+import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:healthmvp/widgets/customdropdown.dart';
 import 'package:healthmvp/widgets/textformfield.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:healthmvp/services/socket_service.dart';
 
 class AddMedicine extends StatefulWidget {
   const AddMedicine({super.key});
@@ -25,35 +27,11 @@ class _AddMedicineState extends State<AddMedicine> {
   var _formkey = GlobalKey<FormState>();
 
   AddmedicineAuthmodel? addmedicineauthmodel;
-  @override
-  void initState() {
-    addmedicineauthmodel = Provider.of<AddmedicineAuthmodel>(
-      context,
-      listen: false,
-    );
-    _notificationService.initialize();
-    super.initState();
-  }
-  // final List<String> items = ['Paracetamol', 'Ibuprofen', 'Aspirin'];
-  // final List<String> selectedItems = [];
-  // final TextEditingController _addItemController = TextEditingController();
-
-  // void _addNewItem(String newItem) {
-  //   if (newItem.isNotEmpty && !items.contains(newItem)) {
-  //     setState(() {
-  //       items.add(newItem);
-  //       selectedItems.add(newItem);
-  //       _addItemController.clear();
-  //     });
-  //   }
-  // }
   final NotificationService _notificationService = NotificationService();
+  late final SocketService _socketService;
   final dropDownKey = GlobalKey<DropdownSearchState>();
-  //final TextEditingController _controller = TextEditingController();
   int selectedIndex = 0; // default selected day index
 
-  // List<TimeOfDay?> selectedTimes = [];
-  // List<String> isoTimes = [];
   DateTime convertToDateTime(TimeOfDay time) {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, time.hour, time.minute);
@@ -65,7 +43,21 @@ class _AddMedicineState extends State<AddMedicine> {
   String? amt;
 
   @override
+  void initState() {
+    super.initState();
+    addmedicineauthmodel = Provider.of<AddmedicineAuthmodel>(
+      context,
+      listen: false,
+    );
+    _notificationService.initialize();
+
+    // Get the global socket instance
+    _socketService = Provider.of<SocketService>(context, listen: false);
+  }
+
+  @override
   void dispose() {
+    // Don't disconnect the socket here anymore since it's managed globally
     addmedicineauthmodel!.dosecontroller.clear();
     addmedicineauthmodel!.medicinenamecontroller.clear();
     addmedicineauthmodel!.notecontroller.clear();
@@ -81,6 +73,7 @@ class _AddMedicineState extends State<AddMedicine> {
     return Form(
       key: _formkey,
       child: Scaffold(
+        //  bottomNavigationBar: Botoomnavbar(),
         backgroundColor: Colors.white,
         body:
             medicineprovider.submitaddmedicinebool == true
@@ -91,22 +84,29 @@ class _AddMedicineState extends State<AddMedicine> {
                     //  crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        // crossAxisAlignment: CrossAxisAlignment.startr,
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Container(
-                          //   decoration: BoxDecoration(
-                          //     color: Color(0xfff0f9fc),
-                          //     borderRadius: BorderRadius.circular(20),
-                          //   ),
-                          //   child: IconButton(
-                          //     icon: const Icon(Icons.arrow_back),
-                          //     color: Color(0xff000000),
-                          //     onPressed: () {
-                          //       context.go('/bottomnavbar');
-                          //     },
-                          //   ),
-                          // ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xfff0f9fc),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              color: Color(0xff000000),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Botoomnavbar(),
+                                  ),
+                                );
+                                // context.go('/bottomnavbar');
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 50),
                           Text("Add Medicine", style: u_20_500_k000000),
                         ],
                       ),
@@ -473,6 +473,27 @@ class _AddMedicineState extends State<AddMedicine> {
                               } else if (medicineprovider.startdate != null &&
                                   medicineprovider.endate != null &&
                                   medicineprovider.selectedTimes.isNotEmpty) {
+                                final socketService =
+                                    Provider.of<SocketService>(
+                                      context,
+                                      listen: false,
+                                    );
+                                if (socketService.isConnected()) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Socket is connected! Sending test event...',
+                                      ),
+                                    ),
+                                  );
+                                  socketService.sendTestEvent();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Socket is not connected!'),
+                                    ),
+                                  );
+                                }
                                 medicineprovider.submitaddmedicine(context, {
                                   "medicine_name":
                                       medicineprovider
@@ -511,10 +532,35 @@ class _AddMedicineState extends State<AddMedicine> {
                         ),
                       ),
                       SizedBox(height: 20),
+                   //   _buildSocketTestButton(),
                     ],
                   ),
                 ),
       ),
+    );
+  }
+
+  Widget _buildSocketTestButton() {
+    return ElevatedButton(
+      onPressed: () {
+        final socketService = Provider.of<SocketService>(
+          context,
+          listen: false,
+        );
+        if (socketService.isConnected()) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Socket is connected! Sending test event...'),
+            ),
+          );
+          socketService.sendTestEvent();
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Socket is not connected!')));
+        }
+      },
+      child: Text('Test Socket Connection'),
     );
   }
 }

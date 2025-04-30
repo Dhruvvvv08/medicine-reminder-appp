@@ -7,28 +7,32 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AuthViewmodel>(context);  // Ensure this line is correct
+    final provider = Provider.of<AuthViewmodel>(
+      context,
+    ); // Ensure this line is correct
 
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-         
-            const SizedBox(height: 20),
-            TextField(controller: provider.passswordcontroller),
-            const SizedBox(height: 20),
-            provider.islogin
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: () => provider.loginn(context),
-                    child: const Text('Login'),
-                  ),
-          ],
-        ),
-      ),
+      body:
+          provider.islogin == true
+              ? Center(child: CircularProgressIndicator())
+              : Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    TextField(controller: provider.passswordcontroller),
+                    const SizedBox(height: 20),
+                    provider.islogin
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                          onPressed: () => provider.loginn(context),
+                          child: const Text('Login'),
+                        ),
+                  ],
+                ),
+              ),
     );
   }
 }

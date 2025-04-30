@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
+import 'package:healthmvp/services/notification_service.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ModernReminderScreen extends StatefulWidget {
   const ModernReminderScreen({Key? key}) : super(key: key);
@@ -27,7 +30,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
   final formData = {
     'medicine_name': "",
     'medicine_dosage': "1",
-    'medicine_instructions': "take with water",
+    'medicine_instructions': "",
     'medicine_category': "tablet",
     'scheduleStart': DateTime.now(),
     'scheduleEnd': DateTime.now().add(const Duration(days: 4)),
@@ -45,11 +48,11 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
   bool reminderNotifications = true;
   bool missedDoseAlerts = true;
 
-  @override
-  void initState() {
-    super.initState();
-    filteredMedicines = commonMedicines;
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   filteredMedicines = commonMedicines;
+  // }
 
   void handleInputChange(String field, dynamic value) {
     setState(() {
@@ -57,9 +60,13 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
     });
   }
 
-  void handleMedicineSelect(Map<String, String> medicine) {
+  void handleMedicineSelect(
+    Map<String, String> medicine,
+    TextEditingController? txt,
+  ) {
     setState(() {
       formData['medicine_name'] = medicine['name']!;
+      txt?.text = medicine['name']!;
       formData['medicine_category'] = medicine['category']!;
       searchTerm = medicine['name'] ?? "";
       showDropdown = false;
@@ -137,8 +144,22 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
     }
   }
 
+  AddmedicineAuthmodel? addmedicineauthmodel;
+  @override
+  void initState() {
+    addmedicineauthmodel = Provider.of<AddmedicineAuthmodel>(
+      context,
+      listen: false,
+    );
+    _notificationService.initialize();
+    filteredMedicines = commonMedicines;
+    super.initState();
+  }
+
+  final NotificationService _notificationService = NotificationService();
   @override
   Widget build(BuildContext context) {
+    final medicineprovider = Provider.of<AddmedicineAuthmodel>(context);
     return Scaffold(
       body: Column(
         children: [
@@ -146,7 +167,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFF2563EB),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -159,53 +180,35 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                 ),
               ],
             ),
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade700,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            // Navigate back
-                          },
-                        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'Create Reminder',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Create Reminder',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Start creating your',
-                    style: TextStyle(color: Colors.blue, fontSize: 14),
-                  ),
-                  const Text(
-                    'Medicine Reminder',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
                     ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Start creating your',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+                const Text(
+                  'Medicine Reminder',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
@@ -216,6 +219,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
               children: [
                 // Medicine Details Section
                 Card(
+                  color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -236,7 +240,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                               ),
                               child: const Icon(
                                 Icons.check_circle_outline,
-                                color: Colors.blue,
+                                color: Color(0xFF2563EB),
                                 size: 20,
                               ),
                             ),
@@ -271,6 +275,8 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: TextFormField(
+                                controller:
+                                    medicineprovider.medicinenamecontroller,
                                 decoration: InputDecoration(
                                   hintText: 'Search or type medicine name',
                                   prefixIcon: const Icon(
@@ -347,7 +353,11 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                         style: const TextStyle(fontSize: 12),
                                       ),
                                       onTap:
-                                          () => handleMedicineSelect(medicine),
+                                          () => handleMedicineSelect(
+                                            medicine,
+                                            medicineprovider
+                                                .medicinenamecontroller,
+                                          ),
                                     );
                                   },
                                 ),
@@ -509,6 +519,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
 
                 // Schedule Section
                 Card(
+                  color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -735,7 +746,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
                                           formData['frequency'] == 'custom'
-                                              ? Colors.blue
+                                              ? Color(0xFF2563EB)
                                               : Colors.grey.shade200,
                                       foregroundColor:
                                           formData['frequency'] == 'custom'
@@ -777,7 +788,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                 ),
                                 label: const Text('Add Time'),
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Colors.blue,
+                                  foregroundColor: Color(0xFF2563EB),
                                   backgroundColor: Colors.blue.shade50,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20),
@@ -823,7 +834,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                       child: const Icon(
                                         Icons.access_time,
                                         size: 16,
-                                        color: Colors.blue,
+                                        color: Color(0xFF2563EB),
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -856,232 +867,231 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                           ),
                         ],
 
-                        const SizedBox(height: 16),
+                        // const SizedBox(height: 16),
 
                         // Repeat dropdown
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Repeat',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: formData['repeat'] as String,
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'daily',
-                                      child: Text('Every day'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'weekdays',
-                                      child: Text('Weekdays only'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'weekends',
-                                      child: Text('Weekends only'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'custom',
-                                      child: Text('Custom days'),
-                                    ),
-                                  ],
-                                  onChanged: (value) {
-                                    handleInputChange('repeat', value);
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     const Text(
+                        //       'Repeat',
+                        //       style: TextStyle(
+                        //         fontSize: 14,
+                        //         fontWeight: FontWeight.w500,
+                        //         color: Colors.grey,
+                        //       ),
+                        //     ),
+                        //     const SizedBox(height: 4),
+                        //     Container(
+                        //       decoration: BoxDecoration(
+                        //         color: Colors.grey.shade100,
+                        //         borderRadius: BorderRadius.circular(15),
+                        //       ),
+                        //       padding: const EdgeInsets.symmetric(
+                        //         horizontal: 12,
+                        //       ),
+                        //       child: DropdownButtonHideUnderline(
+                        //         child: DropdownButton<String>(
+                        //           isExpanded: true,
+                        //           value: formData['repeat'] as String,
+                        //           items: const [
+                        //             DropdownMenuItem(
+                        //               value: 'daily',
+                        //               child: Text('Every day'),
+                        //             ),
+                        //             DropdownMenuItem(
+                        //               value: 'weekdays',
+                        //               child: Text('Weekdays only'),
+                        //             ),
+                        //             DropdownMenuItem(
+                        //               value: 'weekends',
+                        //               child: Text('Weekends only'),
+                        //             ),
+                        //             DropdownMenuItem(
+                        //               value: 'custom',
+                        //               child: Text('Custom days'),
+                        //             ),
+                        //           ],
+                        //           onChanged: (value) {
+                        //             handleInputChange('repeat', value);
+                        //           },
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                // const SizedBox(height: 16),
 
                 // Notification Settings
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.orange.shade50,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.notifications_none,
-                                color: Colors.orange,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Notifications',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
+                // Card(
+                //   shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(20),
+                //   ),
+                //   elevation: 2,
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(16),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Row(
+                //           children: [
+                //             Container(
+                //               width: 40,
+                //               height: 40,
+                //               decoration: BoxDecoration(
+                //                 color: Colors.orange.shade50,
+                //                 borderRadius: BorderRadius.circular(20),
+                //               ),
+                //               child: const Icon(
+                //                 Icons.notifications_none,
+                //                 color: Colors.orange,
+                //                 size: 20,
+                //               ),
+                //             ),
+                //             const SizedBox(width: 12),
+                //             const Text(
+                //               'Notifications',
+                //               style: TextStyle(
+                //                 fontSize: 18,
+                //                 fontWeight: FontWeight.w600,
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //         const SizedBox(height: 16),
 
-                        // Reminder Notifications
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text(
-                                    'Reminder notifications',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Receive alerts before medicine time',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Switch(
-                                value: reminderNotifications,
-                                onChanged: (value) {
-                                  setState(() {
-                                    reminderNotifications = value;
-                                  });
-                                },
-                                activeColor: Colors.blue,
-                              ),
-                            ],
-                          ),
-                        ),
+                //         // Reminder Notifications
+                //         Container(
+                //           padding: const EdgeInsets.all(12),
+                //           decoration: BoxDecoration(
+                //             color: Colors.grey.shade100,
+                //             borderRadius: BorderRadius.circular(15),
+                //           ),
+                //           child: Row(
+                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //             children: [
+                //               Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.start,
+                //                 children: const [
+                //                   Text(
+                //                     'Reminder notifications',
+                //                     style: TextStyle(
+                //                       fontWeight: FontWeight.w500,
+                //                     ),
+                //                   ),
+                //                   Text(
+                //                     'Receive alerts before medicine time',
+                //                     style: TextStyle(
+                //                       fontSize: 12,
+                //                       color: Colors.grey,
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //               Switch(
+                //                 value: reminderNotifications,
+                //                 onChanged: (value) {
+                //                   setState(() {
+                //                     reminderNotifications = value;
+                //                   });
+                //                 },
+                //                 activeColor: Colors.blue,
+                //               ),
+                //             ],
+                //           ),
+                //         ),
 
-                        const SizedBox(height: 8),
+                //         const SizedBox(height: 8),
 
-                        // Missed Dose Alerts
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text(
-                                    'Missed dose alerts',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Get notified if you miss a dose',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Switch(
-                                value: missedDoseAlerts,
-                                onChanged: (value) {
-                                  setState(() {
-                                    missedDoseAlerts = value;
-                                  });
-                                },
-                                activeColor: Colors.blue,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                //         // Missed Dose Alerts
+                //         Container(
+                //           padding: const EdgeInsets.all(12),
+                //           decoration: BoxDecoration(
+                //             color: Colors.grey.shade100,
+                //             borderRadius: BorderRadius.circular(15),
+                //           ),
+                //           child: Row(
+                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //             children: [
+                //               Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.start,
+                //                 children: const [
+                //                   Text(
+                //                     'Missed dose alerts',
+                //                     style: TextStyle(
+                //                       fontWeight: FontWeight.w500,
+                //                     ),
+                //                   ),
+                //                   Text(
+                //                     'Get notified if you miss a dose',
+                //                     style: TextStyle(
+                //                       fontSize: 12,
+                //                       color: Colors.grey,
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //               Switch(
+                //                 value: missedDoseAlerts,
+                //                 onChanged: (value) {
+                //                   setState(() {
+                //                     missedDoseAlerts = value;
+                //                   });
+                //                 },
+                //                 activeColor: Colors.blue,
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
-
-          // Bottom Action Button
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {
-                // Implement save functionality
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Reminder saved successfully!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 5,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.check_circle_outline),
-                  SizedBox(width: 8),
-                  Text(
-                    'Save Reminder',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
+      ),
+      // Bottom Action Button
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        child: ElevatedButton(
+          onPressed: () {
+            // Implement save functionality
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Reminder saved successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            elevation: 5,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.check_circle_outline),
+              SizedBox(width: 8),
+              Text(
+                'Save Reminder',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -16,17 +16,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(
-      Duration(seconds: 3),
-      () {
-         context.go('/onboardingscreen');
-      }
-    );
+    Timer(Duration(seconds: 3), () {
+      context.go('/onboardingscreen');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF2563EB),
       body: Stack(
         children: [
           Container(
@@ -34,10 +32,12 @@ class _SplashScreenState extends State<SplashScreen> {
             width: double.infinity,
             color: k5d53ff,
             child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(50),
-              child: Image.asset('images/healthmvp.jpeg'),
-            ),
+              child: Padding(
+                padding: const EdgeInsets.all(50),
+                child: Image.asset(
+                  'images/HealthMVP Primary Logo (Color Var. 1) PNG.png',
+                ),
+              ),
 
               // Image.asset('assets/images/SplashScreen.png'),
             ),

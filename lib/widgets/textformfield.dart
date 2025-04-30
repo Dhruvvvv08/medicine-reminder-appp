@@ -159,52 +159,36 @@ class _TitledInputFieldState extends State<TitledInputField> {
             counterText: '',
             prefix: widget.prefix,
             isDense: true,
-            contentPadding: const EdgeInsets.all(15),
-            border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 0,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                color: isValidValue ? Colors.grey : Color(0xff2B338C),
-                width: 2,
-              ),
+            border: InputBorder.none, // <-- no visible border
+            enabledBorder: const UnderlineInputBorder(
+              // <-- a simple underline
+              borderSide: BorderSide(color: Colors.grey),
             ),
-            errorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
+            focusedBorder: const UnderlineInputBorder(
+              // <-- underline on focus
+              borderSide: BorderSide(color: Colors.blue, width: 2),
+            ),
+            errorBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.red, width: 2),
             ),
-            labelStyle: TextStyle(
-              color: !widget.enable ? Colors.grey : Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
+            focusedErrorBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.red, width: 2),
             ),
+            hintText: widget.hintText,
             hintStyle: const TextStyle(
               fontFamily: "Poppins",
               color: Color(0xFF222222),
               fontWeight: FontWeight.w400,
               fontSize: 14,
             ),
-            //labelText: widget.hintText,
-            hintText: widget.hintText,
-
+            filled: false, // <-- remove filling color
             suffixIcon:
-                widget.suffixIcon == null
-                    ? widget.isSuffixIcon
-                        ? IconButton(
-                          color: Colors.green,
-                          icon:
-                              _isTextObscured
-                                  ? const Icon(Icons.visibility_off)
-                                  : const Icon(Icons.visibility),
-                          onPressed: () {
-                            setState(() {
-                              _isTextObscured = !_isTextObscured;
-                            });
-                          },
-                        )
-                        : null
-                    : GestureDetector(
+                widget.suffixIcon != null
+                    ? GestureDetector(
                       onTap: () {
                         if (widget.onSuffixClick != null) {
                           widget.onSuffixClick!();
@@ -213,18 +197,9 @@ class _TitledInputFieldState extends State<TitledInputField> {
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: widget.suffixIcon,
-                      ) /*Icon(
-                      widget.suffixIcon,
-                      color: kNormalColor,
-                    ),*/,
-                    ),
-            errorStyle: const TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-            ),
-            filled: true,
-            fillColor: widget.backgroundColor ?? Colors.white,
+                      ),
+                    )
+                    : null,
             suffix: widget.suffix,
             errorText: widget.errorText,
             errorMaxLines: 2,

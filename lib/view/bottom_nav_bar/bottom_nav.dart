@@ -34,7 +34,7 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
         children: [
           Center(child: DashboardScreen()),
           Center(child: MedicineSchedulePage()),
-          Center(child: ModernReminderScreen()),
+          Center(child: AddMedicine()),
           //Center(child: MedicineScreen()),
           Center(child: MedicineListScreen()),
           Center(child: Profile()),

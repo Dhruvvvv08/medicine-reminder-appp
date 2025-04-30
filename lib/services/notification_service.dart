@@ -16,6 +16,10 @@ class NotificationService {
     'Medicine Reminders',
     description: 'Notifications for medicine reminders',
     importance: Importance.max,
+    playSound: true,
+    enableVibration: true,
+    enableLights: true,
+    ledColor: Colors.blue,
   );
 
   static const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -24,9 +28,19 @@ class NotificationService {
     channelDescription: 'Notifications for medicine reminders',
     importance: Importance.max,
     priority: Priority.high,
+    playSound: true,
+    enableVibration: true,
+    enableLights: true,
+    ledColor: Colors.blue,
+    showWhen: true,
+    autoCancel: true,
   );
 
-  static const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
+  static const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+  );
 
   static const NotificationDetails platformChannelSpecifics = NotificationDetails(
     android: androidDetails,
@@ -34,15 +48,14 @@ class NotificationService {
   );
 
   Future<bool> requestPermissions() async {
-    // Request notification permission
+    print('🔔 Requesting notification permissions...');
     final status = await Permission.notification.request();
-    print('Notification permission status: $status');
+    print('📱 Notification permission status: $status');
     
     if (status.isGranted) {
-      // For Android 13 and above, also request exact alarms permission
       if (await Permission.scheduleExactAlarm.shouldShowRequestRationale) {
         final alarmStatus = await Permission.scheduleExactAlarm.request();
-        print('Exact alarm permission status: $alarmStatus');
+        print('⏰ Exact alarm permission status: $alarmStatus');
         return alarmStatus.isGranted;
       }
       return true;
@@ -52,26 +65,25 @@ class NotificationService {
 
   Future<void> initialize() async {
     try {
+      print('🔔 Initializing notification service...');
       tz.initializeTimeZones();
 
-      // Request permissions first
       final hasPermission = await requestPermissions();
       if (!hasPermission) {
-        print('Notification permissions not granted');
+        print('❌ Notification permissions not granted');
         return;
       }
 
-      // Create notification channel for Android
       final androidImplementation = _notifications.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
       
       if (androidImplementation != null) {
+        print('🤖 Setting up Android notifications...');
         await androidImplementation.requestPermission();
-        
         await androidImplementation.createNotificationChannel(channel);
+        print('✅ Android notification channel created');
       }
 
-      // Initialize settings
       const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
       const iosSettings = DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -84,17 +96,17 @@ class NotificationService {
         iOS: iosSettings,
       );
 
-      // Initialize the plugin
       await _notifications.initialize(
         initSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
-          print('Notification tapped: ${response.payload}');
+          print('👆 Notification tapped: ${response.payload}');
         },
       );
 
-      print('Notification service initialized successfully');
-    } catch (e) {
-      print('Error initializing notification service: $e');
+      print('✅ Notification service initialized successfully');
+    } catch (e, stackTrace) {
+      print('❌ Error initializing notification service: $e');
+      print('Stack trace: $stackTrace');
       rethrow;
     }
   }
@@ -209,8 +221,45 @@ class NotificationService {
     }
   }
 
-  // Method to cancel all notifications
+  Future<void> showNotificationNow({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    try {
+      print('🔔 Attempting to show notification:');
+      print('  - Title: $title');
+      print('  - Body: $body');
+      print('  - Payload: $payload');
+
+      final hasPermission = await requestPermissions();
+      if (!hasPermission) {
+        print('❌ Cannot show notification: permissions not granted');
+        throw Exception('Notification permissions not granted');
+      }
+
+      final notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      print('📝 Generated notification ID: $notificationId');
+
+      await _notifications.show(
+        notificationId,
+        title,
+        body,
+        platformChannelSpecifics,
+        payload: payload,
+      );
+      
+      print('✅ Notification shown successfully');
+    } catch (e, stackTrace) {
+      print('❌ Error showing notification: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
   Future<void> cancelAllNotifications() async {
+    print('🧹 Cancelling all notifications...');
     await _notifications.cancelAll();
+    print('✅ All notifications cancelled');
   }
 } 

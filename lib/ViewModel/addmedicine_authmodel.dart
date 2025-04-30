@@ -59,7 +59,7 @@ class AddmedicineAuthmodel extends ChangeNotifier {
       medicinemodel = response.data;
       print(medicinemodel?.data[0].name ?? "");
       getmedicine = false;
-      //   Navigator.push(context, MaterialPageRoute(builder: (context)=> OtpScreen()));
+
       notifyListeners();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,13 +79,13 @@ class AddmedicineAuthmodel extends ChangeNotifier {
 
     var response = await ApiManager().addmedicinesubmitapi(body: body);
     if (response.isSuccessed!) {
-      _scheduleMedicineNotifications(
-        medicinenamecontroller.text,
-        DateTime.parse(startdate!),
+      // _scheduleMedicineNotifications(
+      //   medicinenamecontroller.text,
+      //   DateTime.parse(startdate!),
 
-        DateTime.parse(endate!),
-        selectedTimes.where((time) => time != null).cast<TimeOfDay>().toList(),
-      );
+      //   DateTime.parse(endate!),
+      //   selectedTimes.where((time) => time != null).cast<TimeOfDay>().toList(),
+      // );
       print("doneeeee");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

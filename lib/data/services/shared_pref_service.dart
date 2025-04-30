@@ -16,6 +16,7 @@ class Preferences {
     static const String email = 'email';
   static const String isGmId = 'gm_id';
   static const String token = 'token';
+  static const String id ="id";
     static const String tokenn = 'token';
   static const String user='user';
    static const String phonenumber='mobile';
@@ -24,6 +25,7 @@ class Preferences {
      static const String aopcode='aop_code';
        static const String loginid='login_id';
               static const String designation='designation';
+                     static const String userid='userId';
 
 
 

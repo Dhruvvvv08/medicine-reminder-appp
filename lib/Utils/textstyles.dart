@@ -27,6 +27,12 @@ final TextStyle u_30_800_k000000 = TextStyle(
   color: k000000,
   fontFamily: "Urbanist",
 );
+final TextStyle u_30_500_k000000 = TextStyle(
+  fontSize: 30,
+  fontWeight: FontWeight.w500,
+  color: k000000,
+  fontFamily: "Urbanist",
+);
 final TextStyle u_30_800_k99D079 = TextStyle(
   fontSize: 30,
   fontWeight: FontWeight.w800,
@@ -117,6 +123,25 @@ final TextStyle u_14_500_k1890FF = TextStyle(
   color: k1890FF,
   fontFamily: "Urbanist",
 );
+final TextStyle u_18_500_k1890FF = TextStyle(
+  fontSize: 18,
+  fontWeight: FontWeight.w500,
+  color: k1890FF,
+  fontFamily: "Urbanist",
+);
+
+final TextStyle u_18_500_k2563EB = TextStyle(
+  fontSize: 18,
+  fontWeight: FontWeight.w500,
+  color: k2563EB,
+  fontFamily: "Urbanist",
+);
+final TextStyle u_12_500_k2563EB = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.w500,
+  color: k2563EB,
+  fontFamily: "Urbanist",
+);
 final TextStyle u_12_500_k1890FF = TextStyle(
   fontSize: 12,
   fontWeight: FontWeight.w500,
@@ -126,7 +151,7 @@ final TextStyle u_12_500_k1890FF = TextStyle(
 final TextStyle u_14_500_k3a2aab = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w500,
-  color: k3a2aab,
+  color: k2563EB,
   fontFamily: "Urbanist",
 );
 final TextStyle u_14_500_kd1d0d3 = TextStyle(

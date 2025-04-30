@@ -38,7 +38,7 @@ class ApiManager {
   Future<OnComplete<OtpModel>> loginwithotp({String? email}) async {
     try {
       ApiResponse response = await apiRequest(
-        request: postDataa(url: "/request-otp", body: {"email": email}),
+        request: postDataa(url: "/users/request-otp", body: {"email": email}),
       );
 
       if (response.success == true) {
@@ -60,7 +60,7 @@ class ApiManager {
     try {
       ApiResponse response = await apiRequest(
         request: postDataa(
-          url: "/verify-otp",
+          url: "/users/verify-otp",
           body: {"otp": otp, "userId": userid},
         ),
       );
@@ -80,7 +80,7 @@ class ApiManager {
   Future<OnComplete<RegisterModel>> signupapi({required Map body}) async {
     try {
       ApiResponse response = await apiRequest(
-        request: postDataa(url: "/", body: body),
+        request: postDataa(url: "/users/", body: body),
       );
 
       if (response.success == true) {
@@ -94,7 +94,10 @@ class ApiManager {
       return OnComplete.error("");
     }
   }
-  Future<OnComplete<SubmitAddApi>> addmedicinesubmitapi({required Map body}) async {
+
+  Future<OnComplete<SubmitAddApi>> addmedicinesubmitapi({
+    required Map body,
+  }) async {
     try {
       ApiResponse response = await apiRequest(
         request: postDataa(url: "/reminders", body: body),
@@ -111,6 +114,7 @@ class ApiManager {
       return OnComplete.error("");
     }
   }
+
   Future<OnComplete<MedicneNameModel>> getnamesofmedicine() async {
     try {
       ApiResponse response = await apiRequest(
@@ -150,8 +154,7 @@ class ApiManager {
   }
 
   Future<OnComplete<DashboardData>> dashboardmedicinedata({
-   String? date,
-
+    String? date,
   }) async {
     try {
       ApiResponse response = await apiRequest(
@@ -169,10 +172,8 @@ class ApiManager {
       return OnComplete.error("");
     }
   }
-  Future<OnComplete<ProfileModelData>> getprofileinfo({
-   String? date,
 
-  }) async {
+  Future<OnComplete<ProfileModelData>> getprofileinfo({String? date}) async {
     try {
       ApiResponse response = await apiRequest(
         request: getdataaa(url: "/users/profile"),
@@ -189,6 +190,7 @@ class ApiManager {
       return OnComplete.error("");
     }
   }
+
   Future<OnComplete<ReminderModel>> getremindersofmedicine({
     String? date,
     status,

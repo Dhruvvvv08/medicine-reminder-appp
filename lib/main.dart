@@ -7,7 +7,10 @@ import 'package:healthmvp/ViewModel/profile_authmodel.dart';
 import 'package:healthmvp/ViewModel/reminder_authviewmodel.dart';
 import 'package:healthmvp/ViewModel/show_medicine_authmodel.dart';
 import 'package:healthmvp/data/services/shared_pref_service.dart';
+import 'package:healthmvp/demo.dart';
 import 'package:healthmvp/get_data.dart';
+import 'package:healthmvp/providerdemo.dart';
+import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/emailwithotp.dart';
 import 'package:healthmvp/view/Auth/login_screenn.dart';
 import 'package:healthmvp/view/Auth/otp_screen.dart';
@@ -28,6 +31,7 @@ import 'services/notification_service.dart';
 import 'package:healthmvp/view/notification/notification_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:healthmvp/services/socket_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +48,10 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.initialize();
 
+  // Initialize Socket.IO service
+  final socketService = SocketService();
+  socketService.initializeSocket();
+
   runApp(
     MultiProvider(
       providers: [
@@ -53,6 +61,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ReminderAuthviewmodel()),
         ChangeNotifierProvider(create: (_) => ShowMedicineAuthmodel()),
         ChangeNotifierProvider(create: (_) => ProfileAuthmodel()),
+        //    ChangeNotifierProvider(create: (_) => Providerdemo()),
+        Provider<SocketService>.value(value: socketService),
       ],
       child: MyApp(),
     ),
@@ -77,6 +87,7 @@ class MyApp extends StatelessWidget {
   final GoRouter _router = GoRouter(
     initialLocation: '/splashscreen',
     routes: [
+      GoRoute(path: '/auth', builder: (context, state) => AuthScreen()),
       GoRoute(
         path: '/splashscreen',
         builder: (context, state) => SplashScreen(),
@@ -119,6 +130,14 @@ class MyApp extends StatelessWidget {
       GoRoute(
         path: '/dashboardscreen',
         builder: (context, route) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/createreminder',
+        builder: (context, route) => const AddMedicine(),
+      ),
+      GoRoute(
+        path: '/demooooooo',
+        builder: (context, route) => const Demoooo(),
       ),
     ],
   );
