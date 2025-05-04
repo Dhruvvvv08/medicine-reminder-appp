@@ -9,7 +9,7 @@ class ProfileAuthmodel extends ChangeNotifier {
   ProfileModelData? profiledatamodel;
   Future getdashboarddata(BuildContext context) async {
     profileloading = true;
-
+    notifyListeners();
     var response = await ApiManager().getprofileinfo();
     if (response.isSuccessed!) {
       print("doneeeee");
@@ -26,6 +26,7 @@ class ProfileAuthmodel extends ChangeNotifier {
           duration: const Duration(seconds: 3),
         ),
       );
+      profileloading = false;
       notifyListeners();
     }
   }

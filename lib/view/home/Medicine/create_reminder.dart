@@ -1,5 +1,8 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
+import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
+import 'package:healthmvp/ViewModel/show_medicine_authmodel.dart';
 import 'package:healthmvp/services/notification_service.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -12,35 +15,21 @@ class ModernReminderScreen extends StatefulWidget {
 }
 
 class _ModernReminderScreenState extends State<ModernReminderScreen> {
-  // Sample database of common medicines
-  final List<Map<String, String>> commonMedicines = [
-    {"name": "Vitamin C", "category": "tablet"},
-    {"name": "Aspirin", "category": "tablet"},
-    {"name": "Ibuprofen", "category": "tablet"},
-    {"name": "Paracetamol", "category": "tablet"},
-    {"name": "Amoxicillin", "category": "capsule"},
-    {"name": "Lisinopril", "category": "tablet"},
-    {"name": "Metformin", "category": "tablet"},
-    {"name": "Atorvastatin", "category": "tablet"},
-    {"name": "Omeprazole", "category": "capsule"},
-    {"name": "Levothyroxine", "category": "tablet"},
-  ];
-
   // Form data
-  final formData = {
-    'medicine_name': "",
-    'medicine_dosage': "1",
-    'medicine_instructions': "",
-    'medicine_category': "tablet",
-    'scheduleStart': DateTime.now(),
-    'scheduleEnd': DateTime.now().add(const Duration(days: 4)),
-    'frequency': "custom",
-    'customTimes': <TimeOfDay>[
-      const TimeOfDay(hour: 8, minute: 0),
-      const TimeOfDay(hour: 18, minute: 30),
-    ],
-    'repeat': "daily",
-  };
+  // final formData = {
+  //   'medicine_name': "",
+  //   'medicine_dosage': "1",
+  //   'medicine_instructions': "",
+  //   'medicine_category': "tablet",
+  //   'scheduleStart': DateTime.now(),
+  //   'scheduleEnd': DateTime.now().add(const Duration(days: 4)),
+  //   'frequency': "custom",
+  //   'customTimes': <TimeOfDay>[
+  //     const TimeOfDay(hour: 8, minute: 0),
+  //     const TimeOfDay(hour: 18, minute: 30),
+  //   ],
+  //   'repeat': "daily",
+  // };
 
   String searchTerm = "";
   bool showDropdown = false;
@@ -48,1046 +37,1000 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
   bool reminderNotifications = true;
   bool missedDoseAlerts = true;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   filteredMedicines = commonMedicines;
-  // }
-
-  void handleInputChange(String field, dynamic value) {
-    setState(() {
-      formData[field] = value;
-    });
+  // Helper function to validate medicine category
+  String validateMedicineCategory(String? inputCategory) {
+    const validCategories = [
+      'tablet',
+      'capsule',
+      'liquid',
+      'injection',
+      'syrup',
+    ];
+    final category = inputCategory?.toLowerCase() ?? 'tablet';
+    return validCategories.contains(category) ? category : 'tablet';
   }
 
-  void handleMedicineSelect(
-    Map<String, String> medicine,
-    TextEditingController? txt,
-  ) {
-    setState(() {
-      formData['medicine_name'] = medicine['name']!;
-      txt?.text = medicine['name']!;
-      formData['medicine_category'] = medicine['category']!;
-      searchTerm = medicine['name'] ?? "";
-      showDropdown = false;
-    });
-  }
-
+  var _formkey = GlobalKey<FormState>();
   void handleAddTime() {
     setState(() {
-      List<TimeOfDay> times = List<TimeOfDay>.from(
-        formData['customTimes'] as List<TimeOfDay>,
-      );
-      times.add(const TimeOfDay(hour: 12, minute: 0));
-      formData['customTimes'] = times;
+      addmedicineauthmodel?.selectedTimes.add(TimeOfDay.now());
+      addmedicineauthmodel?.notifyListeners();
     });
   }
 
   void handleRemoveTime(int index) {
     setState(() {
-      List<TimeOfDay> times = List<TimeOfDay>.from(
-        formData['customTimes'] as List<TimeOfDay>,
-      );
-      times.removeAt(index);
-      formData['customTimes'] = times;
+      addmedicineauthmodel?.selectedTimes.removeAt(index);
+      addmedicineauthmodel?.notifyListeners();
     });
   }
+
+  DateTime convertToDateTime(TimeOfDay time) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  }
+
+  Future<void> _selectTime(BuildContext context, int index) async {
+    final currentTimes = addmedicineauthmodel?.selectedTimes ?? [];
+    if (index >= currentTimes.length) return;
+
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: currentTimes[index],
+    );
+
+    if (picked != null && addmedicineauthmodel != null) {
+      setState(() {
+        addmedicineauthmodel!.selectedTimes[index] = picked;
+        addmedicineauthmodel!.notifyListeners();
+        addmedicineauthmodel?.selectedTimes[index] = picked;
+        addmedicineauthmodel?.isoTimes =
+            addmedicineauthmodel!.selectedTimes
+                .map((time) => convertToDateTime(time!).toIso8601String())
+                .toList();
+      });
+    }
+  }
+
+  // void handleAddTime() {
+  //   setState(() {
+  //     addmedicineauthmodel?.selectedTimes.add(const TimeOfDay(hour: 12, minute: 0));
+  //     addmedicineauthmodel?.notifyListeners();
+  //   });
+  // }
+
+  // void handleRemoveTime(int index) {
+  //   setState(() {
+  //     addmedicineauthmodel?.selectedTimes.removeAt(index);
+  //     addmedicineauthmodel?.notifyListeners();
+  //   });
+  // }
+
+  // Future<void> _selectTime(BuildContext context, int index) async {
+  //   final currentTimes = addmedicineauthmodel?.selectedTimes ?? [];
+  //   if (index >= currentTimes.length) return;
+
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: currentTimes[index],
+  //   );
+
+  //   if (picked != null && addmedicineauthmodel != null) {
+  //     setState(() {
+  //       addmedicineauthmodel!.selectedTimes[index] = picked;
+  //       addmedicineauthmodel!.notifyListeners();
+  //     });
+  //   }
+  // }
+  void handleMedicineSelect(
+    Map<String, String> medicine,
+    TextEditingController? txt,
+  ) {
+    setState(() {
+      // Update the medicine name in the controller and model
+      addmedicineauthmodel?.medicinenamecontroller.text = medicine['name']!;
+      txt?.text = medicine['name']!;
+
+      // Update the medicine category in the model
+      addmedicineauthmodel?.type = validateMedicineCategory(
+        medicine['category'],
+      );
+
+      // Update search term and hide dropdown
+      searchTerm = medicine['name'] ?? "";
+      showDropdown = false;
+
+      // Notify listeners if using ChangeNotifier
+      addmedicineauthmodel?.notifyListeners();
+    });
+  }
+
+  // void handleAddTime() {
+  //   setState(() {
+  //     List<TimeOfDay> times = List<TimeOfDay>.from(
+  //       formData['customTimes'] as List<TimeOfDay>,
+  //     );
+  //     times.add(const TimeOfDay(hour: 12, minute: 0));
+  //     formData['customTimes'] = times;
+  //   });
+  // }
+
+  // void handleRemoveTime(int index) {
+  //   setState(() {
+  //     List<TimeOfDay> times = List<TimeOfDay>.from(
+  //       formData['customTimes'] as List<TimeOfDay>,
+  //     );
+  //     times.removeAt(index);
+  //     formData['customTimes'] = times;
+  //   });
+  // }
 
   void filterMedicines(String term) {
     setState(() {
       searchTerm = term;
-      formData['medicine_name'] = term;
+      // Update the medicine name in the controller directly
+      addmedicineauthmodel?.medicinenamecontroller.text = term;
 
-      if (term.isNotEmpty) {
+      final medicineProvider = Provider.of<ShowMedicineAuthmodel>(
+        context,
+        listen: false,
+      );
+
+      if (medicineProvider.getusermedicines != null) {
         filteredMedicines =
-            commonMedicines
+            medicineProvider.getusermedicines!.data
                 .where(
                   (med) =>
-                      med['name']!.toLowerCase().contains(term.toLowerCase()),
+                      term.isEmpty ||
+                      (med.name?.toLowerCase().contains(term.toLowerCase()) ??
+                          false),
+                )
+                .map(
+                  (med) => {
+                    'name': med.name ?? '',
+                    'category': validateMedicineCategory(med.category),
+                  },
                 )
                 .toList();
-        showDropdown = true;
-      } else {
-        filteredMedicines = commonMedicines;
       }
+
+      showDropdown = term.isNotEmpty;
     });
   }
 
-  Future<void> _selectTime(BuildContext context, int index) async {
-    List<TimeOfDay> times = List<TimeOfDay>.from(
-      formData['customTimes'] as List<TimeOfDay>,
-    );
-    final TimeOfDay? picked = await showTimePicker(
+  Future<void> _selectStartDate(BuildContext context) async {
+    final initialDate =
+        addmedicineauthmodel?.startdate != null
+            ? DateFormat('yyyy-MM-dd').parse(addmedicineauthmodel!.startdate!)
+            : DateTime.now();
+
+    final picked = await showCalendarDatePicker2Dialog(
       context: context,
-      initialTime: times[index],
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2030),
+      ),
+      dialogSize: const Size(325, 400),
+      value: [initialDate],
+      borderRadius: BorderRadius.circular(15),
     );
-    if (picked != null && picked != times[index]) {
+
+    if (picked != null && picked.isNotEmpty && picked.first != null) {
       setState(() {
-        times[index] = picked;
-        formData['customTimes'] = times;
+        addmedicineauthmodel!.startdate = DateFormat(
+          'yyyy-MM-dd',
+        ).format(picked.first!);
+        addmedicineauthmodel!.notifyListeners();
       });
     }
   }
 
-  Future<void> _selectDate(BuildContext context, String field) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectEndDate(BuildContext context) async {
+    final initialDate =
+        addmedicineauthmodel?.endate != null
+            ? DateFormat('yyyy-MM-dd').parse(addmedicineauthmodel!.endate!)
+            : DateTime.now();
+
+    final picked = await showCalendarDatePicker2Dialog(
       context: context,
-      initialDate: formData[field] as DateTime,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2030),
+      ),
+      dialogSize: const Size(325, 400),
+      value: [initialDate],
+      borderRadius: BorderRadius.circular(15),
     );
 
-    if (picked != null && picked != formData[field]) {
+    if (picked != null && picked.isNotEmpty && picked.first != null) {
       setState(() {
-        formData[field] = picked;
+        addmedicineauthmodel!.endate = DateFormat(
+          'yyyy-MM-dd',
+        ).format(picked.first!);
+        addmedicineauthmodel!.notifyListeners();
       });
     }
   }
+  // Future<void> _selectTime(BuildContext context, int index) async {
+  //   List<TimeOfDay> times = List<TimeOfDay>.from(
+  //     formData['customTimes'] as List<TimeOfDay>,
+  //   );
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: times[index],
+  //   );
+  //   if (picked != null && picked != times[index]) {
+  //     setState(() {
+  //       times[index] = picked;
+  //       formData['customTimes'] = times;
+  //     });
+  //   }
+  // }
+
+  // Future<void> _selectDate(BuildContext context, String field) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: formData[field] as DateTime,
+  //     firstDate: DateTime(2020),
+  //     lastDate: DateTime(2030),
+  //   );
+
+  //   if (picked != null && picked != formData[field]) {
+  //     setState(() {
+  //       formData[field] = picked;
+  //     });
+  //   }
+  // }
 
   AddmedicineAuthmodel? addmedicineauthmodel;
+  ShowMedicineAuthmodel? showmedicinemodell;
+  final NotificationService _notificationService = NotificationService();
+
   @override
   void initState() {
+    super.initState();
     addmedicineauthmodel = Provider.of<AddmedicineAuthmodel>(
       context,
       listen: false,
     );
     _notificationService.initialize();
-    filteredMedicines = commonMedicines;
-    super.initState();
+
+    showmedicinemodell = Provider.of<ShowMedicineAuthmodel>(
+      context,
+      listen: false,
+    );
+    showmedicinemodell?.getallmedicineusers(context).then((_) {
+      if (showmedicinemodell?.getusermedicines != null) {
+        setState(() {
+          filteredMedicines =
+              showmedicinemodell!.getusermedicines!.data
+                  .map(
+                    (med) => {
+                      'name': med.name ?? '',
+                      'category': validateMedicineCategory(med.category),
+                    },
+                  )
+                  .toList();
+        });
+      }
+    });
   }
 
-  final NotificationService _notificationService = NotificationService();
   @override
   Widget build(BuildContext context) {
     final medicineprovider = Provider.of<AddmedicineAuthmodel>(context);
-    return Scaffold(
-      body: Column(
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Color(0xFF2563EB),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 10,
-                  offset: Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      'Create Reminder',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+    final medicineproviderr = Provider.of<ShowMedicineAuthmodel>(context);
+
+    return Form(
+      key: _formkey,
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.only(bottom: 60),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2563EB),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Start creating your',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const Text(
-                  'Medicine Reminder',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Form Content
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                // Medicine Details Section
-                Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.check_circle_outline,
-                                color: Color(0xFF2563EB),
-                                size: 20,
-                              ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'Create Reminder',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Medicine Details',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Start creating your',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                      const Text(
+                        'Medicine Reminder',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
-                        // Medicine Name Field with Dropdown
-                        Column(
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Medicine Name*',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey,
-                              ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Color(0xFF2563EB),
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Medicine Details',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: TextFormField(
-                                controller:
-                                    medicineprovider.medicinenamecontroller,
-                                decoration: InputDecoration(
-                                  hintText: 'Search or type medicine name',
-                                  prefixIcon: const Icon(
-                                    Icons.search,
+                            const SizedBox(height: 16),
+
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Medicine Name*',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                     color: Colors.grey,
                                   ),
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        showDropdown = !showDropdown;
-                                      });
-                                    },
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
-                                  ),
-                                ),
-                                onChanged: filterMedicines,
-                                // value: searchTerm,
-                              ),
-                            ),
-
-                            // Dropdown for medicines
-                            if (showDropdown)
-                              Container(
-                                margin: const EdgeInsets.only(top: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 2,
-                                      blurRadius: 8,
-                                    ),
-                                  ],
-                                ),
-                                constraints: const BoxConstraints(
-                                  maxHeight: 200,
-                                ),
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: filteredMedicines.length,
-                                  itemBuilder: (context, index) {
-                                    final medicine = filteredMedicines[index];
-                                    return ListTile(
-                                      leading: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.shade100,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            medicine['name']![0],
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.blue,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
+                                  child: TextFormField(
+                                    controller:
+                                        medicineprovider.medicinenamecontroller,
+                                    decoration: InputDecoration(
+                                      hintText: 'Search or type medicine name',
+                                      prefixIcon: const Icon(
+                                        Icons.search,
+                                        color: Colors.grey,
                                       ),
-                                      title: Text(medicine['name']!),
-                                      subtitle: Text(
-                                        medicine['category']!,
-                                        style: const TextStyle(fontSize: 12),
-                                      ),
-                                      onTap:
-                                          () => handleMedicineSelect(
-                                            medicine,
-                                            medicineprovider
-                                                .medicinenamecontroller,
-                                          ),
-                                    );
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Dosage and Category
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Dosage',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade100,
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: TextFormField(
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.symmetric(
-                                          vertical: 12,
-                                          horizontal: 12,
+                                      suffixIcon: IconButton(
+                                        icon: const Icon(
+                                          Icons.arrow_drop_down,
+                                          color: Colors.grey,
                                         ),
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      initialValue:
-                                          formData['medicine_dosage'] as String,
-                                      onChanged:
-                                          (value) => handleInputChange(
-                                            'medicine_dosage',
-                                            value,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Category',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade100,
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        value:
-                                            formData['medicine_category']
-                                                as String,
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 'tablet',
-                                            child: Text('Tablet'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'capsule',
-                                            child: Text('Capsule'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'liquid',
-                                            child: Text('Liquid'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'injection',
-                                            child: Text('Injection'),
-                                          ),
-                                        ],
-                                        onChanged: (value) {
-                                          handleInputChange(
-                                            'medicine_category',
-                                            value,
-                                          );
+                                        onPressed: () {
+                                          setState(() {
+                                            showDropdown = !showDropdown;
+                                          });
                                         },
                                       ),
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                            horizontal: 12,
+                                          ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Instructions
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Instructions',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: TextFormField(
-                                decoration: const InputDecoration(
-                                  hintText: 'e.g. take with water',
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
+                                    onChanged: filterMedicines,
                                   ),
                                 ),
-                                initialValue:
-                                    formData['medicine_instructions'] as String,
-                                onChanged:
-                                    (value) => handleInputChange(
-                                      'medicine_instructions',
-                                      value,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
 
-                const SizedBox(height: 16),
-
-                // Schedule Section
-                Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.purple.shade50,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.calendar_today,
-                                color: Colors.purple,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Schedule',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Date selection
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Start Date',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  InkWell(
-                                    onTap:
-                                        () => _selectDate(
-                                          context,
-                                          'scheduleStart',
+                                if (showDropdown)
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          spreadRadius: 2,
+                                          blurRadius: 8,
                                         ),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 12,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.calendar_today,
-                                            size: 16,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            DateFormat('yyyy-MM-dd').format(
-                                              formData['scheduleStart']
-                                                  as DateTime,
-                                            ),
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      ],
                                     ),
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                          0.4, // 40% of screen height
+                                    ),
+                                    child:
+                                        medicineproviderr.showmedicines
+                                            ? Text("No medicine Available")
+                                            : filteredMedicines.isEmpty
+                                            ? const Padding(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Text('No medicines found'),
+                                            )
+                                            : Scrollbar(
+                                              child: ListView.builder(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const AlwaysScrollableScrollPhysics(), // This enables scrolling
+                                                itemCount:
+                                                    filteredMedicines.length,
+                                                itemBuilder: (context, index) {
+                                                  final medicine =
+                                                      filteredMedicines[index];
+                                                  return ListTile(
+                                                    leading: Container(
+                                                      width: 24,
+                                                      height: 24,
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            Colors
+                                                                .blue
+                                                                .shade100,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          medicine['name']![0],
+                                                          style:
+                                                              const TextStyle(
+                                                                fontSize: 12,
+                                                                color:
+                                                                    Colors.blue,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    title: Text(
+                                                      medicine['name']!,
+                                                    ),
+                                                    subtitle: Text(
+                                                      medicine['category']!,
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                    onTap:
+                                                        () => handleMedicineSelect(
+                                                          medicine,
+                                                          medicineprovider
+                                                              .medicinenamecontroller,
+                                                        ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
                                   ),
-                                ],
-                              ),
+                              ],
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'End Date',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  InkWell(
-                                    onTap:
-                                        () =>
-                                            _selectDate(context, 'scheduleEnd'),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 12,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.calendar_today,
-                                            size: 16,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            DateFormat('yyyy-MM-dd').format(
-                                              formData['scheduleEnd']
-                                                  as DateTime,
-                                            ),
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
 
-                        const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                        // Frequency buttons
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Frequency',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
-                                  child: ElevatedButton(
-                                    onPressed:
-                                        () => handleInputChange(
-                                          'frequency',
-                                          'daily',
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Dosage',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey,
                                         ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          formData['frequency'] == 'daily'
-                                              ? Colors.blue
-                                              : Colors.grey.shade200,
-                                      foregroundColor:
-                                          formData['frequency'] == 'daily'
-                                              ? Colors.white
-                                              : Colors.black,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
                                       ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                        ),
+                                        child: TextFormField(
+                                          decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: "Enter Dosage",
+                                            hintStyle: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                  vertical: 12,
+                                                  horizontal: 12,
+                                                ),
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          controller:
+                                              medicineprovider.dosecontroller,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return "This field is required";
+                                            }
+                                            return null;
+                                          },
+                                          // initialValue:
+                                          //     formData['medicine_dosage'] as String,
+                                          // onChanged:
+                                          //     (value) => handleInputChange(
+                                          //       'medicine_dosage',
+                                          //       value,
+                                          //     ),
+                                        ),
                                       ),
-                                    ),
-                                    child: const Text('Daily'),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 16),
                                 Expanded(
-                                  child: ElevatedButton(
-                                    onPressed:
-                                        () => handleInputChange(
-                                          'frequency',
-                                          'weekly',
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Category',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey,
                                         ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          formData['frequency'] == 'weekly'
-                                              ? Colors.blue
-                                              : Colors.grey.shade200,
-                                      foregroundColor:
-                                          formData['frequency'] == 'weekly'
-                                              ? Colors.white
-                                              : Colors.black,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
                                       ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        ),
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                            isExpanded: true,
+                                            value: medicineprovider.type,
+                                            hint: Text("Please select"),
+                                            items: const [
+                                              DropdownMenuItem(
+                                                value: 'tablet',
+                                                child: Text('Tablet'),
+                                              ),
+                                              DropdownMenuItem(
+                                                value: 'capsule',
+                                                child: Text('Capsule'),
+                                              ),
+                                              DropdownMenuItem(
+                                                value: 'liquid',
+                                                child: Text('Liquid'),
+                                              ),
+                                              DropdownMenuItem(
+                                                value: 'injection',
+                                                child: Text('Injection'),
+                                              ),
+                                              DropdownMenuItem(
+                                                value: 'syrup',
+                                                child: Text('Syrup'),
+                                              ),
+                                            ],
+                                            onChanged: (String? newValue) {
+                                              medicineprovider.type = newValue;
+                                            },
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    child: const Text('Weekly'),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed:
-                                        () => handleInputChange(
-                                          'frequency',
-                                          'custom',
-                                        ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          formData['frequency'] == 'custom'
-                                              ? Color(0xFF2563EB)
-                                              : Colors.grey.shade200,
-                                      foregroundColor:
-                                          formData['frequency'] == 'custom'
-                                              ? Colors.white
-                                              : Colors.black,
-                                      padding: const EdgeInsets.symmetric(
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Instructions',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: TextFormField(
+                                    decoration: const InputDecoration(
+                                      hintText: 'e.g. take with water',
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
                                         vertical: 12,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                        horizontal: 12,
                                       ),
                                     ),
-                                    child: const Text('Custom'),
+                                    controller: medicineprovider.notecontroller,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "This field is required";
+                                      }
+                                      return null;
+                                    },
                                   ),
                                 ),
                               ],
                             ),
                           ],
                         ),
+                      ),
+                    ),
 
-                        if (formData['frequency'] == 'custom') ...[
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Time Schedule',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              TextButton.icon(
-                                onPressed: handleAddTime,
-                                icon: const Icon(
-                                  Icons.add_circle_outline,
-                                  size: 16,
-                                ),
-                                label: const Text('Add Time'),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Color(0xFF2563EB),
-                                  backgroundColor: Colors.blue.shade50,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
+                    const SizedBox(height: 16),
+                    Card(
+                      color: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: 16,
+                          left: 16,
+                          top: 16,
+                          bottom: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Start Date',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      InkWell(
+                                        onTap: () => _selectStartDate(context),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                            horizontal: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius: BorderRadius.circular(
+                                              15,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.calendar_today,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                medicineprovider.startdate ==
+                                                        null
+                                                    ? "Select Start Date"
+                                                    : medicineprovider
+                                                        .startdate!,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'End Date',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      InkWell(
+                                        onTap: () => _selectEndDate(context),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                            horizontal: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius: BorderRadius.circular(
+                                              15,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.calendar_today,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                medicineprovider.endate == null
+                                                    ? "Select End Date"
+                                                    : medicineprovider.endate!,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Time Schedule',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                TextButton.icon(
+                                  onPressed: handleAddTime,
+                                  icon: const Icon(
+                                    Icons.add_circle_outline,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
+                                  label: const Text('Add Time'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF2563EB),
+                                    backgroundColor: Colors.blue.shade50,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount:
+                                  addmedicineauthmodel?.selectedTimes.length ??
+                                  0,
+                              itemBuilder: (context, index) {
+                                final time =
+                                    addmedicineauthmodel?.selectedTimes[index];
+                                if (time == null)
+                                  return const SizedBox.shrink();
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
-                                    vertical: 6,
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount:
-                                (formData['customTimes'] as List<TimeOfDay>)
-                                    .length,
-                            itemBuilder: (context, index) {
-                              final time =
-                                  (formData['customTimes']
-                                      as List<TimeOfDay>)[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 32,
-                                      height: 32,
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.shade100,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.access_time,
-                                        size: 16,
-                                        color: Color(0xFF2563EB),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    TextButton(
-                                      onPressed:
-                                          () => _selectTime(context, index),
-                                      child: Text(
-                                        time.format(context),
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    if ((formData['customTimes']
-                                                as List<TimeOfDay>)
-                                            .length >
-                                        1)
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.close,
-                                          size: 16,
-                                          color: Colors.red,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 32,
+                                        height: 32,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.shade100,
+                                          shape: BoxShape.circle,
                                         ),
-                                        onPressed:
-                                            () => handleRemoveTime(index),
+                                        child: const Icon(
+                                          Icons.access_time,
+                                          size: 16,
+                                          color: Color(0xFF2563EB),
+                                        ),
                                       ),
-                                  ],
+                                      const SizedBox(width: 12),
+                                      TextButton(
+                                        onPressed:
+                                            () => _selectTime(context, index),
+                                        child: Text(
+                                          time.format(context),
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      if ((addmedicineauthmodel
+                                                  ?.selectedTimes
+                                                  .length ??
+                                              0) >
+                                          1)
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.close,
+                                            size: 16,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed:
+                                              () => handleRemoveTime(index),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formkey.currentState!.validate()) {
+                            if (medicineprovider.startdate == null ||
+                                medicineprovider.endate == null ||
+                                medicineprovider.selectedTimes.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Please Select the Date and Time",
+                                  ),
+                                  duration: Duration(seconds: 3),
                                 ),
                               );
-                            },
+                            } else if (medicineprovider.startdate != null &&
+                                medicineprovider.endate != null &&
+                                medicineprovider.selectedTimes.isNotEmpty) {
+                              // final socketService = Provider.of<SocketService>(
+                              //   context,
+                              //   listen: false,
+                              // );
+                              // if (socketService.isConnected()) {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     SnackBar(
+                              //       content: Text(
+                              //         'Socket is connected! Sending test event...',
+                              //       ),
+                              //     ),
+                              //   );
+                              //   socketService.sendTestEvent();
+                              // } else {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     SnackBar(
+                              //       content: Text('Socket is not connected!'),
+                              //     ),
+                              //   );
+                              // }
+                              medicineprovider.submitaddmedicine(context, {
+                                "medicine_name":
+                                    medicineprovider
+                                        .medicinenamecontroller
+                                        .text,
+                                "medicine_dosage":
+                                    medicineprovider.dosecontroller.text,
+                                "medicine_instructions":
+                                    medicineprovider.notecontroller.text,
+                                "medicine_category": medicineprovider.type,
+                                "scheduleStart": medicineprovider.startdate,
+                                "scheduleEnd": medicineprovider.endate,
+                                "frequency": "custom",
+                                "customTimes": medicineprovider.isoTimes,
+                              });
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ],
-
-                        // const SizedBox(height: 16),
-
-                        // Repeat dropdown
-                        // Column(
-                        //   crossAxisAlignment: CrossAxisAlignment.start,
-                        //   children: [
-                        //     const Text(
-                        //       'Repeat',
-                        //       style: TextStyle(
-                        //         fontSize: 14,
-                        //         fontWeight: FontWeight.w500,
-                        //         color: Colors.grey,
-                        //       ),
-                        //     ),
-                        //     const SizedBox(height: 4),
-                        //     Container(
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.grey.shade100,
-                        //         borderRadius: BorderRadius.circular(15),
-                        //       ),
-                        //       padding: const EdgeInsets.symmetric(
-                        //         horizontal: 12,
-                        //       ),
-                        //       child: DropdownButtonHideUnderline(
-                        //         child: DropdownButton<String>(
-                        //           isExpanded: true,
-                        //           value: formData['repeat'] as String,
-                        //           items: const [
-                        //             DropdownMenuItem(
-                        //               value: 'daily',
-                        //               child: Text('Every day'),
-                        //             ),
-                        //             DropdownMenuItem(
-                        //               value: 'weekdays',
-                        //               child: Text('Weekdays only'),
-                        //             ),
-                        //             DropdownMenuItem(
-                        //               value: 'weekends',
-                        //               child: Text('Weekends only'),
-                        //             ),
-                        //             DropdownMenuItem(
-                        //               value: 'custom',
-                        //               child: Text('Custom days'),
-                        //             ),
-                        //           ],
-                        //           onChanged: (value) {
-                        //             handleInputChange('repeat', value);
-                        //           },
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
+                          elevation: 5,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.check_circle_outline),
+                            SizedBox(width: 8),
+                            Text(
+                              'Save Reminder',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-
-                // const SizedBox(height: 16),
-
-                // Notification Settings
-                // Card(
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(20),
-                //   ),
-                //   elevation: 2,
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(16),
-                //     child: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         Row(
-                //           children: [
-                //             Container(
-                //               width: 40,
-                //               height: 40,
-                //               decoration: BoxDecoration(
-                //                 color: Colors.orange.shade50,
-                //                 borderRadius: BorderRadius.circular(20),
-                //               ),
-                //               child: const Icon(
-                //                 Icons.notifications_none,
-                //                 color: Colors.orange,
-                //                 size: 20,
-                //               ),
-                //             ),
-                //             const SizedBox(width: 12),
-                //             const Text(
-                //               'Notifications',
-                //               style: TextStyle(
-                //                 fontSize: 18,
-                //                 fontWeight: FontWeight.w600,
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //         const SizedBox(height: 16),
-
-                //         // Reminder Notifications
-                //         Container(
-                //           padding: const EdgeInsets.all(12),
-                //           decoration: BoxDecoration(
-                //             color: Colors.grey.shade100,
-                //             borderRadius: BorderRadius.circular(15),
-                //           ),
-                //           child: Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               Column(
-                //                 crossAxisAlignment: CrossAxisAlignment.start,
-                //                 children: const [
-                //                   Text(
-                //                     'Reminder notifications',
-                //                     style: TextStyle(
-                //                       fontWeight: FontWeight.w500,
-                //                     ),
-                //                   ),
-                //                   Text(
-                //                     'Receive alerts before medicine time',
-                //                     style: TextStyle(
-                //                       fontSize: 12,
-                //                       color: Colors.grey,
-                //                     ),
-                //                   ),
-                //                 ],
-                //               ),
-                //               Switch(
-                //                 value: reminderNotifications,
-                //                 onChanged: (value) {
-                //                   setState(() {
-                //                     reminderNotifications = value;
-                //                   });
-                //                 },
-                //                 activeColor: Colors.blue,
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-
-                //         const SizedBox(height: 8),
-
-                //         // Missed Dose Alerts
-                //         Container(
-                //           padding: const EdgeInsets.all(12),
-                //           decoration: BoxDecoration(
-                //             color: Colors.grey.shade100,
-                //             borderRadius: BorderRadius.circular(15),
-                //           ),
-                //           child: Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               Column(
-                //                 crossAxisAlignment: CrossAxisAlignment.start,
-                //                 children: const [
-                //                   Text(
-                //                     'Missed dose alerts',
-                //                     style: TextStyle(
-                //                       fontWeight: FontWeight.w500,
-                //                     ),
-                //                   ),
-                //                   Text(
-                //                     'Get notified if you miss a dose',
-                //                     style: TextStyle(
-                //                       fontSize: 12,
-                //                       color: Colors.grey,
-                //                     ),
-                //                   ),
-                //                 ],
-                //               ),
-                //               Switch(
-                //                 value: missedDoseAlerts,
-                //                 onChanged: (value) {
-                //                   setState(() {
-                //                     missedDoseAlerts = value;
-                //                   });
-                //                 },
-                //                 activeColor: Colors.blue,
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      // Bottom Action Button
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        child: ElevatedButton(
-          onPressed: () {
-            // Implement save functionality
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Reminder saved successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            elevation: 5,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.check_circle_outline),
-              SizedBox(width: 8),
-              Text(
-                'Save Reminder',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),

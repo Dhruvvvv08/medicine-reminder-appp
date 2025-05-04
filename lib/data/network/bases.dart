@@ -10,7 +10,7 @@ import 'package:http_parser/http_parser.dart';
 //In this file all the API requests are created, we will call these requests for all the APIs
 
 //const String baseUrl = 'https://inspectionapi.austere.biz/inspection/api';
-const String baseUrl = 'http://192.168.29.249:3002/api';
+const String baseUrl = 'http://13.126.206.90:3000/api';
 http.Client client = http.Client();
 // final LocalStorageService _storageService = LocalStorageService();
 

@@ -8,11 +8,11 @@ import 'package:healthmvp/services/notification_service.dart';
 class AddmedicineAuthmodel extends ChangeNotifier {
   bool getmedicine = false;
   String? type;
-  final TextEditingController medicinenamecontroller = TextEditingController();
+  TextEditingController medicinenamecontroller = TextEditingController();
   final TextEditingController notecontroller = TextEditingController();
   final TextEditingController dosecontroller = TextEditingController();
   String? frequencyy;
-  List<TimeOfDay?> selectedTimes = [];
+  List<TimeOfDay> selectedTimes = []; // Changed to non-nullable
   List<String> isoTimes = [];
   String? startdate;
   String? endate;
@@ -35,16 +35,13 @@ class AddmedicineAuthmodel extends ChangeNotifier {
         medicineName: medicineName,
         startDate: startDate,
         endDate: endDate,
-        times:
-            selectedTimes
-                .where((time) => time != null)
-                .cast<TimeOfDay>()
-                .toList(),
+        times: selectedTimes, 
       );
     } catch (e) {
-      print(e);
+      print('Error scheduling notifications: $e');
     } finally {
       _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -52,23 +49,29 @@ class AddmedicineAuthmodel extends ChangeNotifier {
 
   Future getallmedicine(BuildContext context) async {
     getmedicine = true;
+    notifyListeners();
 
-    var response = await ApiManager().getnamesofmedicine();
-    if (response.isSuccessed!) {
-      print("doneeeee");
-      medicinemodel = response.data;
-      print(medicinemodel?.data[0].name ?? "");
-      getmedicine = false;
-
-      notifyListeners();
-    } else {
+    try {
+      var response = await ApiManager().getnamesofmedicine();
+      if (response.isSuccessed!) {
+        medicinemodel = response.data;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message.toString()),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(response.message.toString()),
-          // icon: const Icon(Icons.refresh),
+          content: Text('Error fetching medicines: $e'),
           duration: const Duration(seconds: 3),
         ),
       );
+    } finally {
+      getmedicine = false;
       notifyListeners();
     }
   }
@@ -77,45 +80,52 @@ class AddmedicineAuthmodel extends ChangeNotifier {
     submitaddmedicinebool = true;
     notifyListeners();
 
-    var response = await ApiManager().addmedicinesubmitapi(body: body);
-    if (response.isSuccessed!) {
-      // _scheduleMedicineNotifications(
-      //   medicinenamecontroller.text,
-      //   DateTime.parse(startdate!),
+    try {
+      var response = await ApiManager().addmedicinesubmitapi(body: body);
+      if (response.isSuccessed!) {
+        // if (startdate != null && endate != null) {
+        //   await _scheduleMedicineNotifications(
+        //     medicinenamecontroller.text,
+        //     DateTime.parse(startdate!),
+        //     DateTime.parse(endate!),
+        //     selectedTimes,
+        //   );
+        // }
 
-      //   DateTime.parse(endate!),
-      //   selectedTimes.where((time) => time != null).cast<TimeOfDay>().toList(),
-      // );
-      print("doneeeee");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Reminder Set Successfully"),
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        // Reset form
+        medicinenamecontroller.clear();
+        notecontroller.clear();
+        dosecontroller.clear();
+        selectedTimes.clear();
+        isoTimes.clear();
+        startdate = null;
+        endate = null;
+        frequencyy = null;
+        type = null;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message.toString()),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Reminder Set Sucessfully"),
-          // icon: const Icon(Icons.refresh),
+          content: Text('Error submitting medicine: $e'),
           duration: const Duration(seconds: 3),
         ),
       );
-      //  context.go('/dashboardscreen');
+    } finally {
       submitaddmedicinebool = false;
-      medicinenamecontroller.clear();
-      notecontroller.clear();
-      dosecontroller.clear();
-      selectedTimes = [];
-      isoTimes = [];
-      startdate = null;
-      frequencyy = null;
-      type = null;
-
-      endate = null;
-
-      notifyListeners();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.message.toString()),
-          // icon: const Icon(Icons.refresh),
-          duration: const Duration(seconds: 3),
-        ),
-      );
       notifyListeners();
     }
   }

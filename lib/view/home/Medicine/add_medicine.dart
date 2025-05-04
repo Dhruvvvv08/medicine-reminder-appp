@@ -367,12 +367,12 @@ class _AddMedicineState extends State<AddMedicine> {
                           setState(() {
                             medicineprovider.frequencyy = newValue;
                             int freq = int.tryParse(newValue!) ?? 0;
-                            medicineprovider
-                                .selectedTimes = List<TimeOfDay?>.filled(
-                              freq,
-                              null,
-                              growable: false,
-                            );
+                            // medicineprovider
+                            //     .selectedTimes = List<TimeOfDay?>.filled(
+                            //   freq,
+                            //   null,
+                            //   growable: false,
+                            // );
                             print(medicineprovider.selectedTimes);
                           });
                         },
@@ -532,7 +532,7 @@ class _AddMedicineState extends State<AddMedicine> {
                         ),
                       ),
                       SizedBox(height: 20),
-                   //   _buildSocketTestButton(),
+                      //   _buildSocketTestButton(),
                     ],
                   ),
                 ),

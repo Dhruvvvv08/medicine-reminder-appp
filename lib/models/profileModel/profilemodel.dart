@@ -34,7 +34,6 @@ class Data {
     String email;
     String phone;
     String role;
-    Parent parent;
     List<dynamic> dependents;
     NotificationPreferences notificationPreferences;
     String createdAt;
@@ -45,7 +44,6 @@ class Data {
         required this.email,
         required this.phone,
         required this.role,
-        required this.parent,
         required this.dependents,
         required this.notificationPreferences,
         required this.createdAt,
@@ -57,7 +55,6 @@ class Data {
         email: json["email"],
         phone: json["phone"],
         role: json["role"],
-        parent: Parent.fromJson(json["parent"]),
         dependents: List<dynamic>.from(json["dependents"].map((x) => x)),
         notificationPreferences: NotificationPreferences.fromJson(json["notificationPreferences"]),
         createdAt: json["createdAt"],
@@ -69,7 +66,6 @@ class Data {
         "email": email,
         "phone": phone,
         "role": role,
-        "parent": parent.toJson(),
         "dependents": List<dynamic>.from(dependents.map((x) => x)),
         "notificationPreferences": notificationPreferences.toJson(),
         "createdAt": createdAt,
@@ -97,37 +93,5 @@ class NotificationPreferences {
         "email": email,
         "push": push,
         "sms": sms,
-    };
-}
-
-class Parent {
-    String id;
-    String name;
-    String email;
-    String phone;
-    String parentId;
-
-    Parent({
-        required this.id,
-        required this.name,
-        required this.email,
-        required this.phone,
-        required this.parentId,
-    });
-
-    factory Parent.fromJson(Map<String, dynamic> json) => Parent(
-        id: json["_id"],
-        name: json["name"],
-        email: json["email"],
-        phone: json["phone"],
-        parentId: json["id"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-        "email": email,
-        "phone": phone,
-        "id": parentId,
     };
 }

@@ -6,6 +6,7 @@ import 'package:healthmvp/view/home/Dashbaord/dashboard.dart';
 import 'package:healthmvp/view/home/Medicine/Medicine_schedule.dart';
 import 'package:healthmvp/view/home/Medicine/add_medicine.dart';
 import 'package:healthmvp/view/home/Medicine/create_reminder.dart';
+import 'package:healthmvp/view/home/Medicine/explore_screen.dart';
 import 'package:healthmvp/view/home/Medicine/show_all_medicine.dart';
 import 'package:healthmvp/view/home/Medicine/show_medicine.dart';
 import 'package:healthmvp/view/home/Medicine/show_medicine_schdule.dart';
@@ -13,15 +14,24 @@ import 'package:healthmvp/view/setting/Profile.dart';
 import 'package:healthmvp/view/setting/Setting_screen.dart';
 
 class Botoomnavbar extends StatefulWidget {
-  const Botoomnavbar({super.key});
+  final int initialIndex;
+
+  const Botoomnavbar({super.key, this.initialIndex = 0});
 
   @override
   State<Botoomnavbar> createState() => _BotoomnavbarState();
 }
 
 class _BotoomnavbarState extends State<Botoomnavbar> {
-  PageController _pageController = PageController(initialPage: 0);
-  int indexxx = 0;
+  late PageController _pageController;
+  late int indexxx;
+
+  @override
+  void initState() {
+    super.initState();
+    indexxx = widget.initialIndex;
+    _pageController = PageController(initialPage: indexxx);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,38 +42,13 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          Center(child: DashboardScreen()),
-          Center(child: MedicineSchedulePage()),
-          Center(child: AddMedicine()),
-          //Center(child: MedicineScreen()),
-          Center(child: MedicineListScreen()),
-          Center(child: Profile()),
+          const Center(child: DashboardScreen()),
+          const Center(child: MedicationReminderScreen()),
+          const Center(child: ModernReminderScreen()),
+          const Center(child: MedicineListScreen()),
+          const Center(child: Profile()),
         ],
       ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      // floatingActionButton: Container(
-      //   width: 60,
-      //   height: 60,
-      //   decoration: BoxDecoration(
-      //     shape: BoxShape.circle,
-      //     color: Colors.white,
-      //     boxShadow: [
-      //       BoxShadow(
-      //         color: Colors.black.withOpacity(0.15),
-      //         blurRadius: 8,
-      //         offset: const Offset(0, 2),
-      //       ),
-      //     ],
-      //   ),
-      //   child: FloatingActionButton(
-      //     backgroundColor: Colors.purple,
-      //     elevation: 0,
-      //     onPressed: () {
-      //       context.go('/addmedicine');
-      //     },
-      //     child: const Icon(Icons.add, color: Colors.black),
-      //   ),
-      // ),
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8.0,
@@ -74,11 +59,7 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               navItem(icon: Icons.home, label: 'Home', pageIndex: 0),
-              navItem(
-                icon: Icons.explore_outlined,
-                label: 'Explore',
-                pageIndex: 1,
-              ),
+              navItem(icon: Icons.explore_outlined, label: 'Explore', pageIndex: 1),
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -102,15 +83,11 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
                   ),
                   child: Icon(
                     Icons.add,
-                    color: indexxx == 2 ? Colors.black : Colors.black,
+                    color: Colors.black,
                   ),
                 ),
               ),
-              navItem(
-                icon: Icons.medical_information,
-                label: 'Medicines',
-                pageIndex: 3,
-              ),
+              navItem(icon: Icons.medical_information, label: 'Medicines', pageIndex: 3),
               navItem(icon: Icons.settings, label: 'Settings', pageIndex: 4),
             ],
           ),

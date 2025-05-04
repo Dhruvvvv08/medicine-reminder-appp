@@ -9,7 +9,8 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
 
   static const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'medicine_reminders',
@@ -22,19 +23,22 @@ class NotificationService {
     ledColor: Colors.blue,
   );
 
-  static const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-    'medicine_reminders',
-    'Medicine Reminders',
-    channelDescription: 'Notifications for medicine reminders',
-    importance: Importance.max,
-    priority: Priority.high,
-    playSound: true,
-    enableVibration: true,
-    enableLights: true,
-    ledColor: Colors.blue,
-    showWhen: true,
-    autoCancel: true,
-  );
+  static const AndroidNotificationDetails androidDetails =
+      AndroidNotificationDetails(
+        'medicine_reminders',
+        'Medicine Reminders',
+        channelDescription: 'Notifications for medicine reminders',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        enableLights: true,
+        ledColor: Colors.blue,
+        ledOnMs: 1000,
+        ledOffMs: 500,
+        showWhen: true,
+        autoCancel: true,
+      );
 
   static const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
     presentAlert: true,
@@ -42,16 +46,14 @@ class NotificationService {
     presentSound: true,
   );
 
-  static const NotificationDetails platformChannelSpecifics = NotificationDetails(
-    android: androidDetails,
-    iOS: iosDetails,
-  );
+  static const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidDetails, iOS: iosDetails);
 
   Future<bool> requestPermissions() async {
     print('🔔 Requesting notification permissions...');
     final status = await Permission.notification.request();
     print('📱 Notification permission status: $status');
-    
+
     if (status.isGranted) {
       if (await Permission.scheduleExactAlarm.shouldShowRequestRationale) {
         final alarmStatus = await Permission.scheduleExactAlarm.request();
@@ -74,9 +76,12 @@ class NotificationService {
         return;
       }
 
-      final androidImplementation = _notifications.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-      
+      final androidImplementation =
+          _notifications
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
+
       if (androidImplementation != null) {
         print('🤖 Setting up Android notifications...');
         await androidImplementation.requestPermission();
@@ -84,7 +89,9 @@ class NotificationService {
         print('✅ Android notification channel created');
       }
 
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      );
       const iosSettings = DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
@@ -127,16 +134,18 @@ class NotificationService {
 
       final now = DateTime.now();
       print('Current time: $now');
-      
+
       final days = endDate.difference(startDate).inDays + 1;
-      print('Scheduling notifications for $days days with ${times.length} times per day');
+      print(
+        'Scheduling notifications for $days days with ${times.length} times per day',
+      );
 
       for (int i = 0; i < days; i++) {
         final currentDate = startDate.add(Duration(days: i));
-        
+
         for (int j = 0; j < times.length; j++) {
           final time = times[j];
-          
+
           // Schedule the 30-minute warning notification
           final warningTime = DateTime(
             currentDate.year,
@@ -195,7 +204,7 @@ class NotificationService {
   }) async {
     try {
       final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
-      
+
       if (tzDateTime.isAfter(tz.TZDateTime.now(tz.local))) {
         print('Scheduling notification:');
         print('ID: $id');
@@ -210,9 +219,10 @@ class NotificationService {
           tzDateTime,
           platformChannelSpecifics,
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
         );
-        
+
         print('Notification scheduled successfully');
       }
     } catch (e) {
@@ -248,7 +258,7 @@ class NotificationService {
         platformChannelSpecifics,
         payload: payload,
       );
-      
+
       print('✅ Notification shown successfully');
     } catch (e, stackTrace) {
       print('❌ Error showing notification: $e');
@@ -262,4 +272,4 @@ class NotificationService {
     await _notifications.cancelAll();
     print('✅ All notifications cancelled');
   }
-} 
+}

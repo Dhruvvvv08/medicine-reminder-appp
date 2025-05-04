@@ -109,7 +109,7 @@ class MedicineCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Image.network(
-              'http://192.168.29.249:3002/images/tablet.png',
+              'http://13.126.206.90:3000/images/tablet.png',
             ),
           ),
           SizedBox(width: 16),

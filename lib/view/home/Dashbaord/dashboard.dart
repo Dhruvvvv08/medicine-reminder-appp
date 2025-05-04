@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthmvp/ViewModel/dashboard_viewmodel.dart';
 import 'package:healthmvp/models/dashboard/dashboard.dart';
+import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:healthmvp/view/home/Medicine/add_medicine.dart';
+import 'package:healthmvp/view/home/Medicine/create_reminder.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -152,16 +154,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         child: LinearProgressIndicator(
                                           value:
                                               controllerProvider
-                                                  .dashboardata!
-                                                  .data
-                                                  .reminderCounts
-                                                  .taken
-                                                  .toDouble() /
-                                              controllerProvider
-                                                  .dashboardata!
-                                                  .data
-                                                  .reminderCounts
-                                                  .total,
+                                                          .dashboardata!
+                                                          .data
+                                                          .reminderCounts
+                                                          .total ==
+                                                      0
+                                                  ? 0.0
+                                                  : controllerProvider
+                                                          .dashboardata!
+                                                          .data
+                                                          .reminderCounts
+                                                          .taken
+                                                          .toDouble() /
+                                                      controllerProvider
+                                                          .dashboardata!
+                                                          .data
+                                                          .reminderCounts
+                                                          .total,
                                           backgroundColor: Colors.grey[200],
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
@@ -320,7 +329,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => AddMedicine(),
+                                            builder:
+                                                (context) => Botoomnavbar(
+                                                  initialIndex: 2,
+                                                ),
                                           ),
                                         );
                                       },
@@ -333,12 +345,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       Icons.calendar_today,
                                       const Color(0xFF8B5CF6),
                                       () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) => (),
-                                        //   ),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => Botoomnavbar(
+                                                  initialIndex: 1,
+                                                ),
+                                          ),
+                                        );
                                       },
                                     ),
                                   ),
@@ -357,10 +372,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(height: 12),
                               if (controllerProvider
-                                      .dashboardata
-                                      ?.data
-                                      .mostTakenMedicines !=
-                                  null)
+                                          .dashboardata
+                                          ?.data
+                                          .mostTakenMedicines !=
+                                      null &&
+                                  controllerProvider
+                                      .dashboardata!
+                                      .data
+                                      .mostTakenMedicines
+                                      .isNotEmpty)
                                 ...List.generate(
                                   controllerProvider
                                       .dashboardata!
@@ -368,6 +388,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       .mostTakenMedicines
                                       .length,
                                   (index) => _buildMedicineItem(context, index),
+                                )
+                              else
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 80),
+                                    child: Text(
+                                      "No most taken medicines available",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                             ],
                           ),

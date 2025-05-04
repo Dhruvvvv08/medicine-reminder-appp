@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:healthmvp/ViewModel/profile_authmodel.dart';
+import 'package:healthmvp/data/services/shared_pref_service.dart';
+import 'package:healthmvp/view/Auth/auth.dart';
+import 'package:healthmvp/view/Auth/login_screenn.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
@@ -173,14 +176,17 @@ class _ProfileState extends State<Profile> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
+
                                 ...(controllerprovider
-                                        .profiledatamodel!
-                                        .data
-                                        .dependents)
+                                            .profiledatamodel
+                                            ?.data
+                                            ?.dependents ??
+                                        [])
                                     .map(
                                       (dependent) =>
                                           _buildDependentItem(dependent),
-                                    ),
+                                    )
+                                    .toList(),
                               ],
                             ),
                             showTitle: false,
@@ -240,7 +246,15 @@ class _ProfileState extends State<Profile> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                SharedPref.pref!.remove(Preferences.token);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AuthScreen(),
+                                  ),
+                                );
+                              },
                               icon: const Icon(Icons.logout),
                               label: const Text("Logout"),
                               style: ElevatedButton.styleFrom(
@@ -263,7 +277,6 @@ class _ProfileState extends State<Profile> {
                   ],
                 ),
               ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -402,56 +415,6 @@ class _ProfileState extends State<Profile> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 3, // Profile tab is selected
-      selectedItemColor: const Color(0xFF2563EB),
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today),
-          label: 'Schedule',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.notifications_outlined),
-          label: 'Reminders',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-    );
-  }
-}
-
-// To see this in the app, you can use the following in your main.dart
-// or wherever you handle navigation:
-
-void main() {
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-  );
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Medicine Reminder',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Roboto',
-        scaffoldBackgroundColor: const Color(0xFFF5F7FA),
-      ),
-      home: const Profile(),
     );
   }
 }

@@ -9,14 +9,16 @@ class ReminderAuthviewmodel extends ChangeNotifier {
 
   String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-  Future getreminderoftheday(BuildContext context, String date) async {
+  Future getreminderoftheday(
+    BuildContext context,
+    String date,
+    String status,
+  ) async {
     isreminderloading = true;
-
-    notifyListeners();
 
     var res = await ApiManager().getremindersofmedicine(
       date: "${date}",
-      status: "pending",
+      status: status,
     );
 
     if (res.isSuccessed!) {

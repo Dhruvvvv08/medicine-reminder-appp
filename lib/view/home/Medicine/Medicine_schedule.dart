@@ -20,7 +20,7 @@ class _MedicineSchedulePageState extends State<MedicineSchedulePage> {
       context,
       listen: false,
     );
-    reminderauthmodel!.getreminderoftheday(context, reminderauthmodel!.date);
+    reminderauthmodel!.getreminderoftheday(context, reminderauthmodel!.date,"pending");
     super.initState();
   }
 
@@ -122,6 +122,7 @@ class _MedicineSchedulePageState extends State<MedicineSchedulePage> {
                                     controller.getreminderoftheday(
                                       context,
                                       controller.date,
+                                      "pending"
                                     );
                                   }
                                 },

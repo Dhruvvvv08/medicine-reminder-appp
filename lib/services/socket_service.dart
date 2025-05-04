@@ -22,15 +22,15 @@ class SocketService {
 
     print('🔌 Initializing socket with userId: $userId');
 
-    socket = IO.io('http://192.168.29.249:3002', {
+    socket = IO.io('http://13.126.206.90:3000', {
       'transports': ['websocket'],
       'autoConnect': true,
       'auth': {'token': token},
       'extraHeaders': {'Authorization': 'Bearer $token'},
       'reconnection': true,
       'reconnectionDelay': 1000,
-      'reconnectionDelayMax': 5000,
-      'reconnectionAttempts': 5,
+      'reconnectionDelayMax': 10000,
+      'reconnectionAttempts': 20,
     });
 
     _setupSocketListeners();
@@ -64,22 +64,11 @@ class SocketService {
       print('❌ Connection Error: $error');
     });
 
-    // Notification event
-    // socket.on('notification', (data) {
-    //   print('📩 Received notification data: $data');
-    //   if (data is Map) {
-    //     print('📝 Notification details:');
-    //     print('  - Title: ${data['title']}');
-    //     print('  - Message: ${data['message']}');
-    //     print('  - Type: ${data['type']}');
-    //     print('  - ReminderId: ${data['reminderId']}');
-    //   }
-    //   _handleNotification(data);
-    // });
+    //Notification event
+    socket.on('notification', (data) {
+      print('📩 Received notification data: $data');
 
-
-    socket.onAny((event, handler){
-  print("recicved event or$event ");
+      _handleNotification(data);
     });
   }
 
@@ -97,14 +86,14 @@ class SocketService {
   void _handleNotification(dynamic data) async {
     try {
       print('🔔 Processing notification...');
-      
+
       if (data == null) {
         print('❌ Notification data is null');
         return;
       }
 
       String title = data['title'] ?? 'Medicine Reminder';
-      String message = data['message'] ?? 'Time to take your medicine';
+      String message = data['body'] ?? 'Time to take your medicine';
       String type = data['type'] ?? 'reminder';
       String reminderId = data['reminderId'] ?? '';
 
@@ -117,11 +106,12 @@ class SocketService {
       await _notificationService.showNotificationNow(
         title: title,
         body: message,
-        payload: {
-          'type': type,
-          'reminderId': reminderId,
-          'data': data.toString(),
-        }.toString(),
+        payload:
+            {
+              'type': type,
+              'reminderId': reminderId,
+              'data': data.toString(),
+            }.toString(),
       );
 
       print('✅ Notification sent successfully');

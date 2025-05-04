@@ -68,8 +68,8 @@ class _OtpScreenState extends State<OtpScreen> {
             Center(
               child: Image.asset(
                 "images/HealthMVP Logo Mark PNG 1 .png",
-                height: 80,
-                width: 80,
+                height: 150,
+                width: 150,
               ),
             ),
             // Container(

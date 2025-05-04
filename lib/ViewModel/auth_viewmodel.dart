@@ -9,6 +9,7 @@ import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/login_screen.dart';
 import 'package:healthmvp/view/Auth/login_screenn.dart';
 import 'package:healthmvp/view/Auth/otp_screen.dart';
+import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewmodel extends ChangeNotifier {
@@ -62,7 +63,7 @@ class AuthViewmodel extends ChangeNotifier {
           await SharedPref.pref?.setString(Preferences.token, token) ?? false;
       print("Token saved: $success");
 
-       String id = response.data!.data.id.toString();
+      String id = response.data!.data.id.toString();
       print(id);
       bool sucessid =
           await SharedPref.pref?.setString(Preferences.id, id) ?? false;
@@ -106,7 +107,7 @@ class AuthViewmodel extends ChangeNotifier {
     if (response.isSuccessed!) {
       print(loginwithotp.text.toString());
       print("doneeeee");
-       String userid = response.data!.data.userId.toString();
+      String userid = response.data!.data.userId.toString();
       print(userid);
       bool success =
           await SharedPref.pref?.setString(Preferences.userid, userid) ?? false;
@@ -138,13 +139,13 @@ class AuthViewmodel extends ChangeNotifier {
 
   Future verifyotp(BuildContext context) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    String userId = SharedPref.pref!.getString(Preferences.id) ?? "";
     getotploading = true;
     notifyListeners();
 
     var response = await ApiManager().verifyotp(
       otp: InputOtp,
-      userid: '67f0cfd933d42221800798f1',
+      userid: '${userId}',
     );
     if (response.isSuccessed!) {
       print(loginwithotp.text.toString());
@@ -159,7 +160,7 @@ class AuthViewmodel extends ChangeNotifier {
       getotploading = false;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => OtpScreen()),
+        MaterialPageRoute(builder: (context) => Botoomnavbar()),
       );
       notifyListeners();
     } else {
