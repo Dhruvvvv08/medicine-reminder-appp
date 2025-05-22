@@ -80,6 +80,13 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   Widget build(BuildContext context) {
     final baseUrl = showmedicinemodell?.getusermedicines?.baseUrl ?? "";
 
+    final emojiMap = {
+      'tablet': '⚪',
+      'injection': '💉',
+      'liquid': '💧',
+      'capsule': '💊',
+    };
+
     return Scaffold(
       body: Column(
         children: [
@@ -94,7 +101,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -256,15 +263,22 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                         stackTrace,
                                       ) {
                                         return Container(
-                                          width: 60,
-                                          height: 60,
-                                          color: _getCategoryColor(
-                                            category,
-                                          ).withOpacity(0.2),
-                                          child: Icon(
-                                            Icons.medication,
-                                            color: _getCategoryColor(category),
-                                            size: 30,
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFDBEAFE),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+
+                                          child: Text(
+                                            emojiMap[category.toLowerCase()] ??
+                                                '💊',
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                            ),
                                           ),
                                         );
                                       },

@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:healthmvp/Utils/colors.dart';
-import 'package:healthmvp/view/Auth/login_screen.dart';
 import 'package:healthmvp/view/home/Dashbaord/dashboard.dart';
 import 'package:healthmvp/view/home/Medicine/Medicine_schedule.dart';
-import 'package:healthmvp/view/home/Medicine/add_medicine.dart';
 import 'package:healthmvp/view/home/Medicine/create_reminder.dart';
 import 'package:healthmvp/view/home/Medicine/explore_screen.dart';
 import 'package:healthmvp/view/home/Medicine/show_all_medicine.dart';
-import 'package:healthmvp/view/home/Medicine/show_medicine.dart';
-import 'package:healthmvp/view/home/Medicine/show_medicine_schdule.dart';
 import 'package:healthmvp/view/setting/Profile.dart';
-import 'package:healthmvp/view/setting/Setting_screen.dart';
 
 class Botoomnavbar extends StatefulWidget {
   final int initialIndex;
@@ -42,24 +35,37 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          const Center(child: DashboardScreen()),
-          const Center(child: MedicationReminderScreen()),
-          const Center(child: ModernReminderScreen()),
-          const Center(child: MedicineListScreen()),
-          const Center(child: Profile()),
+          const DashboardScreen(),
+          const MedicationReminderScreen(),
+          const ModernReminderScreen(),
+          const MedicineListScreen(),
+          Profile(),
         ],
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
+
+      // ✅ FIXED Bottom Nav Bar without tap-through issues
+      bottomNavigationBar: Material(
+        elevation: 8,
         color: Colors.white,
-        child: SizedBox(
+        child: Container(
           height: 70,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              navItem(icon: Icons.home, label: 'Home', pageIndex: 0),
-              navItem(icon: Icons.explore_outlined, label: 'Explore', pageIndex: 1),
+              Expanded(
+                child: navItem(
+                  icon: Icons.home,
+                  label: 'Dashboard',
+                  pageIndex: 0,
+                ),
+              ),
+              Expanded(
+                child: navItem(
+                  icon: Icons.notifications,
+                  label: 'Reminders',
+                  pageIndex: 1,
+                ),
+              ),
+              const SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -68,11 +74,11 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
                   });
                 },
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: kf0f9ff,
+                    color: const Color(0xFF2563EB),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.15),
@@ -81,14 +87,24 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
                       ),
                     ],
                   ),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.black,
-                  ),
+                  child: const Icon(Icons.add, color: Colors.white),
                 ),
               ),
-              navItem(icon: Icons.medical_information, label: 'Medicines', pageIndex: 3),
-              navItem(icon: Icons.settings, label: 'Settings', pageIndex: 4),
+              const SizedBox(width: 10),
+              Expanded(
+                child: navItem(
+                  icon: Icons.medical_information,
+                  label: 'Medicines',
+                  pageIndex: 3,
+                ),
+              ),
+              Expanded(
+                child: navItem(
+                  icon: Icons.person,
+                  label: 'Profile',
+                  pageIndex: 4,
+                ),
+              ),
             ],
           ),
         ),
@@ -113,13 +129,13 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: isSelected ? Colors.teal : Colors.grey),
+          Icon(icon, color: isSelected ? const Color(0xFF2563EB) : Colors.grey),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.teal : Colors.grey,
-              fontSize: 12,
+              color: isSelected ? const Color(0xFF2563EB) : Colors.grey,
+              fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
           ),

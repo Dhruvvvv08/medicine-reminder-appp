@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
 import 'package:healthmvp/ViewModel/auth_viewmodel.dart';
+import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/otp_screen.dart';
 import 'package:healthmvp/view/Auth/signup_screen.dart';
 import 'package:healthmvp/widgets/textformfield.dart';
@@ -34,7 +35,13 @@ class _EmailwithotpState extends State<Emailwithotp> {
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios),
                       onPressed: () {
-                        context.go('/auth');
+                  //
+                   Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => AuthScreen(),
+                                                ),
+                                              );
                       },
                     ),
                   ],
@@ -133,7 +140,7 @@ class _EmailwithotpState extends State<Emailwithotp> {
 //                     IconButton(
 //                       icon: const Icon(Icons.arrow_back_ios),
 //                       onPressed: () {
-//                         context.go('/auth');
+//                      
 //                       },
 //                     ),
 //                   ],

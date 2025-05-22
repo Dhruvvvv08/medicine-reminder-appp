@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
 import 'package:healthmvp/ViewModel/auth_viewmodel.dart';
+import 'package:healthmvp/services/google_sign_service.dart';
+import 'package:healthmvp/view/Auth/emailwithotp.dart';
 import 'package:healthmvp/view/Auth/signup_screen.dart';
 import 'package:healthmvp/widgets/textformfield.dart';
 import 'package:provider/provider.dart';
@@ -145,13 +147,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                           alignment: Alignment.centerRight,
                                           child: GestureDetector(
                                             onTap: () {
-                                              context.go('/loginwithotp');
-                                              // Navigator.push(
-                                              //   context,
-                                              //   MaterialPageRoute(
-                                              //     builder: (context) => Emailwithotp(),
-                                              //   ),
-                                              // );
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          Emailwithotp(),
+                                                ),
+                                              );
                                             },
                                             child: Text(
                                               "Sign In With OTP",
@@ -226,10 +229,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                           children: [
                                             InkWell(
                                               onTap: () async {
-                                                //  final Uri url = Uri.parse('https://www.apple.com');
-                                                // if (!await launchUrl(url)) {
-                                                //   throw Exception('Could not launch $url');
-                                                // }
+                                                signInWithGoogleAndCallBackend(
+                                                  context,
+                                                );
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(

@@ -1,3 +1,9 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/services/notification_service.dart';
@@ -8,17 +14,14 @@ class SocketService {
   final NotificationService _notificationService = NotificationService();
   bool _isInitialized = false;
 
-  factory SocketService() {
-    return _instance;
-  }
-
+  factory SocketService() => _instance;
   SocketService._internal();
 
   void initializeSocket() {
     if (_isInitialized) return;
 
-    String token = SharedPref.pref!.getString(Preferences.token) ?? "";
-    String userId = SharedPref.pref!.getString(Preferences.id) ?? "";
+    String token = SharedPref.pref?.getString(Preferences.token) ?? "";
+    String userId = SharedPref.pref?.getString(Preferences.id) ?? "";
 
     print('🔌 Initializing socket with userId: $userId');
 
@@ -39,18 +42,15 @@ class SocketService {
   }
 
   void _setupSocketListeners() {
-    // Connection event
     socket.onConnect((_) {
       print('🟢 Socket Connected: ${socket.id}');
       _joinUserRoom();
     });
 
-    // Disconnect event
     socket.onDisconnect((_) {
       print('🔴 Socket Disconnected');
     });
 
-    // Error handling
     socket.onError((error) {
       print('⚠️ Socket Error: $error');
     });
@@ -64,109 +64,82 @@ class SocketService {
       print('❌ Connection Error: $error');
     });
 
-    //Notification event
     socket.on('notification', (data) {
       print('📩 Received notification data: $data');
-
       _handleNotification(data);
     });
   }
 
   void _joinUserRoom() {
-    String userId = SharedPref.pref!.getString(Preferences.id) ?? "";
+    String userId = SharedPref.pref?.getString(Preferences.id) ?? "";
     if (userId.isNotEmpty) {
-      print('👤 Attempting to join room for user: $userId');
       socket.emit('join', {'userId': userId});
-      print('✅ Join request sent for user: $userId');
+      print('✅ Joined room for user: $userId');
     } else {
-      print('❌ Cannot join room: userId is empty');
+      print('❌ User ID missing, cannot join room');
     }
   }
 
-  void _handleNotification(dynamic data) async {
+  Future<void> _handleNotification(dynamic data) async {
     try {
-      print('🔔 Processing notification...');
-
-      if (data == null) {
-        print('❌ Notification data is null');
-        return;
-      }
-
       String title = data['title'] ?? 'Medicine Reminder';
       String message = data['body'] ?? 'Time to take your medicine';
       String type = data['type'] ?? 'reminder';
       String reminderId = data['reminderId'] ?? '';
-
-      print('📨 Sending notification:');
-      print('  - Title: $title');
-      print('  - Message: $message');
-      print('  - Type: $type');
-      print('  - ReminderId: $reminderId');
+      print(reminderId);
 
       await _notificationService.showNotificationNow(
         title: title,
         body: message,
+        reminderid: reminderId.toString(),
         payload:
             {
+              
               'type': type,
               'reminderId': reminderId,
               'data': data.toString(),
             }.toString(),
       );
 
-      print('✅ Notification sent successfully');
+      print('✅ Notification shown');
     } catch (e, stackTrace) {
-      print('❌ Error handling notification: $e');
-      print('Stack trace: $stackTrace');
+      print('❌ Notification error: $e');
+      print(stackTrace);
     }
   }
 
   void reconnect() {
     if (!socket.connected) {
-      print('🔄 Attempting to reconnect socket...');
       socket.connect();
     }
   }
 
   void disconnect() {
     if (socket.connected) {
-      print('🔌 Disconnecting socket...');
       socket.disconnect();
     }
     _isInitialized = false;
   }
 
-  bool isConnected() {
-    return socket.connected;
-  }
+  bool isConnected() => socket.connected;
 
-  // Method to emit events to the server if needed
   void emitEvent(String eventName, dynamic data) {
     if (socket.connected) {
-      print('📤 Emitting event: $eventName with data: $data');
       socket.emit(eventName, data);
     } else {
-      print('❌ Cannot emit event: Socket not connected');
+      print('❌ Cannot emit: Socket not connected');
     }
   }
 
-  // Call this when user logs out
   void cleanup() {
-    print('🧹 Cleaning up socket service...');
     disconnect();
     _isInitialized = false;
   }
 
-  // Add a method to emit test event
   void sendTestEvent() {
-    if (socket.connected) {
-      print('📤 Sending test event');
-      socket.emit('testEvent', {
-        'message': 'Hello from Flutter!',
-        'timestamp': DateTime.now().toIso8601String(),
-      });
-    } else {
-      print('❌ Socket not connected');
-    }
+    emitEvent('testEvent', {
+      'message': 'Hello from Flutter!',
+      'timestamp': DateTime.now().toIso8601String(),
+    });
   }
 }

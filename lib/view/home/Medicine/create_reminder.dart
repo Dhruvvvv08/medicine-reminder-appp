@@ -51,11 +51,23 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
   }
 
   var _formkey = GlobalKey<FormState>();
-  void handleAddTime() {
+  void handleAddTime() async {
+    final newTime = TimeOfDay.now();
     setState(() {
-      addmedicineauthmodel?.selectedTimes.add(TimeOfDay.now());
+      addmedicineauthmodel?.selectedTimes.add(newTime);
       addmedicineauthmodel?.notifyListeners();
     });
+
+    final index = (addmedicineauthmodel?.selectedTimes.length ?? 1) - 1;
+    final picked = await _selectTime(context, index);
+
+    // If user dismissed the picker without selecting, remove the empty slot
+    if (picked == null) {
+      setState(() {
+        addmedicineauthmodel?.selectedTimes.removeAt(index);
+        addmedicineauthmodel?.notifyListeners();
+      });
+    }
   }
 
   void handleRemoveTime(int index) {
@@ -70,9 +82,11 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
     return DateTime(now.year, now.month, now.day, time.hour, time.minute);
   }
 
-  Future<void> _selectTime(BuildContext context, int index) async {
+  Future<TimeOfDay?> _selectTime(BuildContext context, int index) async {
     final currentTimes = addmedicineauthmodel?.selectedTimes ?? [];
-    if (index >= currentTimes.length) return;
+    if (index >= currentTimes.length) return null;
+
+    FocusScope.of(context).unfocus();
 
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -80,16 +94,17 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
     );
 
     if (picked != null && addmedicineauthmodel != null) {
-      setState(() {
-        addmedicineauthmodel!.selectedTimes[index] = picked;
-        addmedicineauthmodel!.notifyListeners();
-        addmedicineauthmodel?.selectedTimes[index] = picked;
-        addmedicineauthmodel?.isoTimes =
-            addmedicineauthmodel!.selectedTimes
-                .map((time) => convertToDateTime(time!).toIso8601String())
-                .toList();
-      });
+      final newTimes = List<TimeOfDay>.from(
+        addmedicineauthmodel!.selectedTimes,
+      );
+      newTimes[index] = picked;
+      addmedicineauthmodel!.selectedTimes = newTimes;
+      addmedicineauthmodel!.isoTimes =
+          newTimes.map((time) => convertToDateTime(time).toString()).toList();
+      addmedicineauthmodel!.notifyListeners();
     }
+
+    return picked;
   }
 
   // void handleAddTime() {
@@ -329,7 +344,12 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.only(
+                  right: 24,
+                  left: 24,
+                  bottom: 15,
+                  top: 10,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFF2563EB),
                   borderRadius: BorderRadius.only(
@@ -361,16 +381,16 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Start creating your',
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                      const Text(
-                        'Medicine Reminder',
+                      const SizedBox(height: 9),
+                      // const Text(
+                      //   'Start creating your',
+                      //   style: TextStyle(color: Colors.grey, fontSize: 18),
+                      // ),
+                      Text(
+                        'Start creating your Medicine Reminder',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -455,6 +475,13 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                         onPressed: () {
                                           setState(() {
                                             showDropdown = !showDropdown;
+                                            if (showDropdown) {
+                                              filterMedicines(
+                                                medicineprovider
+                                                    .medicinenamecontroller
+                                                    .text,
+                                              );
+                                            }
                                           });
                                         },
                                       ),
@@ -469,8 +496,11 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                   ),
                                 ),
 
-                                if (showDropdown)
+                                // Dropdown Container (only shows when there are results)
+                                if (showDropdown &&
+                                    filteredMedicines.isNotEmpty)
                                   Container(
+                                    padding: EdgeInsets.zero,
                                     margin: const EdgeInsets.only(top: 4),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -486,75 +516,59 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                     constraints: BoxConstraints(
                                       maxHeight:
                                           MediaQuery.of(context).size.height *
-                                          0.4, // 40% of screen height
+                                          0.2,
                                     ),
-                                    child:
-                                        medicineproviderr.showmedicines
-                                            ? Text("No medicine Available")
-                                            : filteredMedicines.isEmpty
-                                            ? const Padding(
-                                              padding: EdgeInsets.all(16.0),
-                                              child: Text('No medicines found'),
-                                            )
-                                            : Scrollbar(
-                                              child: ListView.builder(
-                                                shrinkWrap: true,
-                                                physics:
-                                                    const AlwaysScrollableScrollPhysics(), // This enables scrolling
-                                                itemCount:
-                                                    filteredMedicines.length,
-                                                itemBuilder: (context, index) {
-                                                  final medicine =
-                                                      filteredMedicines[index];
-                                                  return ListTile(
-                                                    leading: Container(
-                                                      width: 24,
-                                                      height: 24,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            Colors
-                                                                .blue
-                                                                .shade100,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          medicine['name']![0],
-                                                          style:
-                                                              const TextStyle(
-                                                                fontSize: 12,
-                                                                color:
-                                                                    Colors.blue,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    title: Text(
-                                                      medicine['name']!,
-                                                    ),
-                                                    subtitle: Text(
-                                                      medicine['category']!,
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                    onTap:
-                                                        () => handleMedicineSelect(
-                                                          medicine,
-                                                          medicineprovider
-                                                              .medicinenamecontroller,
-                                                        ),
-                                                  );
-                                                },
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.zero,
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      itemCount: filteredMedicines.length,
+                                      itemBuilder: (context, index) {
+                                        final medicine =
+                                            filteredMedicines[index];
+                                        return ListTile(
+                                          contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 0,
+                                          ),
+                                          leading: Container(
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue.shade100,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                medicine['name']![0],
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
+                                          ),
+                                          title: Text(medicine['name']!),
+                                          subtitle: Text(
+                                            medicine['category']!,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          onTap:
+                                              () => handleMedicineSelect(
+                                                medicine,
+                                                medicineprovider
+                                                    .medicinenamecontroller,
+                                              ),
+                                        );
+                                      },
+                                    ),
                                   ),
                               ],
                             ),
-
                             const SizedBox(height: 16),
 
                             Row(
@@ -645,7 +659,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                           child: DropdownButton<String>(
                                             isExpanded: true,
                                             value: medicineprovider.type,
-                                            hint: Text("Please select"),
+                                            hint: const Text("Select category"),
                                             items: const [
                                               DropdownMenuItem(
                                                 value: 'tablet',
@@ -669,7 +683,12 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                               ),
                                             ],
                                             onChanged: (String? newValue) {
-                                              medicineprovider.type = newValue;
+                                              if (newValue != null) {
+                                                setState(() {
+                                                  medicineprovider.type =
+                                                      newValue;
+                                                });
+                                              }
                                             },
                                           ),
                                         ),
@@ -756,35 +775,44 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      InkWell(
-                                        onTap: () => _selectStartDate(context),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                            horizontal: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                              15,
+                                      Focus(
+                                        onFocusChange: (hasFocus) {
+                                          if (hasFocus) {
+                                            FocusScope.of(
+                                              context,
+                                            ).unfocus(); // Prevent focus shift
+                                          }
+                                        },
+                                        child: InkWell(
+                                          onTap:
+                                              () => _selectStartDate(context),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                              horizontal: 12,
                                             ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.calendar_today,
-                                                size: 16,
-                                                color: Colors.grey,
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                medicineprovider.startdate ==
-                                                        null
-                                                    ? "Select Start Date"
-                                                    : medicineprovider
-                                                        .startdate!,
-                                              ),
-                                            ],
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.calendar_today,
+                                                  size: 16,
+                                                  color: Colors.grey,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  medicineprovider.startdate ==
+                                                          null
+                                                      ? "Select Start Date"
+                                                      : medicineprovider
+                                                          .startdate!,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -806,33 +834,43 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      InkWell(
-                                        onTap: () => _selectEndDate(context),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                            horizontal: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                              15,
+                                      Focus(
+                                        onFocusChange: (hasFocus) {
+                                          if (hasFocus) {
+                                            FocusScope.of(
+                                              context,
+                                            ).unfocus(); // Prevent focus shift
+                                          }
+                                        },
+                                        child: InkWell(
+                                          onTap: () => _selectEndDate(context),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                              horizontal: 12,
                                             ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.calendar_today,
-                                                size: 16,
-                                                color: Colors.grey,
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                medicineprovider.endate == null
-                                                    ? "Select End Date"
-                                                    : medicineprovider.endate!,
-                                              ),
-                                            ],
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.calendar_today,
+                                                  size: 16,
+                                                  color: Colors.grey,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  medicineprovider.endate ==
+                                                          null
+                                                      ? "Select End Date"
+                                                      : medicineprovider
+                                                          .endate!,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -869,7 +907,6 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
-                                      vertical: 6,
                                     ),
                                   ),
                                 ),
@@ -878,6 +915,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
 
                             ListView.builder(
                               shrinkWrap: true,
+                              padding: EdgeInsets.zero,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount:
                                   addmedicineauthmodel?.selectedTimes.length ??
@@ -999,13 +1037,14 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                 "scheduleStart": medicineprovider.startdate,
                                 "scheduleEnd": medicineprovider.endate,
                                 "frequency": "custom",
+                                "repeat": "daily",
                                 "customTimes": medicineprovider.isoTimes,
                               });
                             }
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Color(0xFF2563EB),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(

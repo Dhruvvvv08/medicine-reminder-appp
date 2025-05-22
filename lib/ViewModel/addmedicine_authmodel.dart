@@ -31,12 +31,12 @@ class AddmedicineAuthmodel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await _notificationService.scheduleMedicineReminders(
-        medicineName: medicineName,
-        startDate: startDate,
-        endDate: endDate,
-        times: selectedTimes, 
-      );
+      // await _notificationService.scheduleMedicineReminders(
+      //   medicineName: medicineName,
+      //   startDate: startDate,
+      //   endDate: endDate,
+      //   times: selectedTimes,
+      // );
     } catch (e) {
       print('Error scheduling notifications: $e');
     } finally {

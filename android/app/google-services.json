@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "631018979560",
+    "project_id": "health-mvp-a0c87",
+    "storage_bucket": "health-mvp-a0c87.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631018979560:android:00ed9af13008626c7b495d",
+        "android_client_info": {
+          "package_name": "com.example.healthmvp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631018979560-9612q44ils25okq5k9obvv6iqrrhm4n0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.healthmvp",
+            "certificate_hash": "49260de372adbea6c1a0b8b5577ec81ed24580ef"
+          }
+        },
+        {
+          "client_id": "631018979560-loja8vatath9jhbghabbfvqvn0j04uu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4BFE3rg9duBmvDDoAGsblFfzn-tHBHBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "631018979560-loja8vatath9jhbghabbfvqvn0j04uu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "631018979560-o6a0hpfltuh9h9vdn6f9rbg4pin856lp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.healthmvp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631018979560:android:160c536c9873b64d7b495d",
+        "android_client_info": {
+          "package_name": "com.package.healthmvp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631018979560-5tsbg6m4i765ot2t7g1l12m0bdik44pe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.package.healthmvp",
+            "certificate_hash": "49260de372adbea6c1a0b8b5577ec81ed24580ef"
+          }
+        },
+        {
+          "client_id": "631018979560-loja8vatath9jhbghabbfvqvn0j04uu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4BFE3rg9duBmvDDoAGsblFfzn-tHBHBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "631018979560-loja8vatath9jhbghabbfvqvn0j04uu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "631018979560-o6a0hpfltuh9h9vdn6f9rbg4pin856lp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.healthmvp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

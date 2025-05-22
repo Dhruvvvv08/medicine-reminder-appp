@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
@@ -38,6 +39,14 @@ class NotificationService {
         ledOffMs: 500,
         showWhen: true,
         autoCancel: true,
+        actions: <AndroidNotificationAction>[
+          AndroidNotificationAction(
+            'TAKEN_ACTION', // Action ID
+            'Taken', // Button label
+            showsUserInterface: true,
+            cancelNotification: true,
+          ),
+        ],
       );
 
   static const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -105,8 +114,14 @@ class NotificationService {
 
       await _notifications.initialize(
         initSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse response) {
+        onDidReceiveNotificationResponse: (
+          NotificationResponse response,
+        ) async {
           print('👆 Notification tapped: ${response.payload}');
+          if (response.actionId == 'TAKEN_ACTION') {
+            print('💊 "Taken" button pressed');
+            await markastakenapi(response.payload.toString());
+          }
         },
       );
 
@@ -235,6 +250,7 @@ class NotificationService {
     required String title,
     required String body,
     String? payload,
+    String? reminderid,
   }) async {
     try {
       print('🔔 Attempting to show notification:');
@@ -256,7 +272,7 @@ class NotificationService {
         title,
         body,
         platformChannelSpecifics,
-        payload: payload,
+        payload: reminderid,
       );
 
       print('✅ Notification shown successfully');
@@ -271,5 +287,31 @@ class NotificationService {
     print('🧹 Cancelling all notifications...');
     await _notifications.cancelAll();
     print('✅ All notifications cancelled');
+  }
+
+  Future<bool> markastakenapi(String reminderid) async {
+    try {
+      var res = await ApiManager().markastaken(reminderid: reminderid);
+
+      if (res.isSuccessed!) {
+        return true; // Return success status
+      } else {
+        // if (res.message != null) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content: Text(res.message!)),
+        //   );
+        // }
+        // markastaken = false;
+        // notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      // markastaken = false;
+      // notifyListeners();
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Error: $e')),
+      // );
+      return false;
+    }
   }
 }

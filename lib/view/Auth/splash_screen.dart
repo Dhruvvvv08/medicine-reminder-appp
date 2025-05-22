@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthmvp/Utils/colors.dart';
+import 'package:healthmvp/data/services/shared_pref_service.dart';
+import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/login_screen.dart';
+import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,9 +20,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
-      context.go('/onboardingscreen');
-    });
+    wheretogo();
+    // Timer(Duration(seconds: 3), () {
+
+    // });
   }
 
   @override
@@ -30,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Container(
             height: double.infinity,
             width: double.infinity,
-            color: k5d53ff,
+
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(50),
@@ -54,5 +59,39 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
     );
+  }
+
+  void wheretogo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool weatherloggedin = prefs.getBool(Preferences.login) ?? false;
+    Timer(Duration(seconds: 3), () {
+      if (mounted) {
+        if (weatherloggedin == null || !weatherloggedin) {
+     Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => AuthScreen(),
+                                                ),
+                                              );
+
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => AuthScreen()),
+          // );
+        } else {
+          print("Is logged in: $weatherloggedin");
+          Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Botoomnavbar(),
+                                                ),
+                                              );
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => Botoomnavbar()),
+          // );
+        }
+      }
+    });
   }
 }

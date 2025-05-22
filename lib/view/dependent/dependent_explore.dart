@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:healthmvp/ViewModel/dependent_autmodel.dart';
 import 'package:healthmvp/ViewModel/reminder_authviewmodel.dart';
 import 'package:healthmvp/models/remindersmodel/reminder_model.dart';
 import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class MedicationReminderScreen extends StatefulWidget {
-  const MedicationReminderScreen({Key? key}) : super(key: key);
+class DependentExpore extends StatefulWidget {
+  String dependentid;
+  DependentExpore({super.key, required this.dependentid});
 
   @override
-  State<MedicationReminderScreen> createState() =>
-      _MedicationReminderScreenState();
+  State<DependentExpore> createState() => _DependentExporeState();
 }
 
-class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
+class _DependentExporeState extends State<DependentExpore> {
   DateTime selectedDate = DateTime.now();
   String filterStatus = 'all';
   bool showEmptyState = false;
 
-  ReminderAuthviewmodel? reminderauthmodel;
+  DependentAutmodel? reminderauthmodel;
 
   @override
   void initState() {
     super.initState();
-    reminderauthmodel = Provider.of<ReminderAuthviewmodel>(
-      context,
-      listen: false,
-    );
+    reminderauthmodel = Provider.of<DependentAutmodel>(context, listen: false);
+    print(widget.dependentid.toString());
     _fetchReminders();
   }
 
@@ -46,10 +45,10 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
     });
 
     final status = filterStatus == 'all' ? 'pending' : filterStatus;
-    await reminderauthmodel?.getreminderoftheday(
+    await reminderauthmodel?.getdependentreminder(
       context,
       DateFormat('yyyy-MM-dd').format(selectedDate),
-      status,
+      widget.dependentid,
     );
 
     final hasData = reminderauthmodel?.remindermodell?.data.isNotEmpty ?? false;
@@ -110,7 +109,7 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
   Widget build(BuildContext context) {
     final filteredReminders = getFilteredReminders();
     final dateFormat = DateFormat('EEEE, MMMM d');
-    final controllerprovider = Provider.of<ReminderAuthviewmodel>(context);
+    final controllerprovider = Provider.of<DependentAutmodel>(context);
 
     return Scaffold(
       body: Column(
@@ -132,7 +131,7 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
                         'Medication Reminders',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -141,7 +140,7 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
                         'Manage your medications',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.8),
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -166,9 +165,9 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
 
           // Main content
           Expanded(
-            child: Consumer<ReminderAuthviewmodel>(
+            child: Consumer<DependentAutmodel>(
               builder: (context, model, child) {
-                if (model.isreminderloading) {
+                if (model.isdependentloading) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
@@ -274,25 +273,25 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
                                         return _buildReminderItem(
                                           reminder,
                                           () async {
-                                            bool success =
-                                                await controllerprovider
-                                                    .markastakenapi(
-                                                      context,
-                                                      reminder.reminderId,
-                                                    );
+                                            // bool success =
+                                            //     await controllerprovider
+                                            //         .markastakenapi(
+                                            //           context,
+                                            //           reminder.reminderId,
+                                            //         );
 
-                                            if (success) {
-                                              // Only navigate if the API call was successful
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) => Botoomnavbar(
-                                                        initialIndex: 0,
-                                                      ),
-                                                ),
-                                              );
-                                            }
+                                            // if (success) {
+                                            //   // Only navigate if the API call was successful
+                                            //   Navigator.push(
+                                            //     context,
+                                            //     MaterialPageRoute(
+                                            //       builder:
+                                            //           (context) => Botoomnavbar(
+                                            //             initialIndex: 0,
+                                            //           ),
+                                            //     ),
+                                            //   );
+                                            //  }
                                           },
                                         );
                                       }).toList(),
@@ -416,7 +415,7 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
 
   Widget _buildReminderItem(Datum reminder, VoidCallback ontap) {
     final emojiMap = {
-      'tablet': '⚪',
+   'tablet': '⚪',
       'injection': '💉',
       'liquid': '💧',
       'capsule': '💊',

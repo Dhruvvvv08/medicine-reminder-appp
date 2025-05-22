@@ -120,7 +120,7 @@ Future<http.Response> postDataa<T>({
   String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
 
   // if (addToken) {
-  //   requestHeaders = appendAccessTokenWith({}, sessionToken);
+  //   requestHeaders = appendAccessTokeremovenWith({}, sessionToken);
   // }
 
   // else {
@@ -460,6 +460,36 @@ Future<http.Response> getdataaa({
   final response = await client.get(
     isCustomUrl ? Uri.parse(url) : Uri.parse(baseUrl + url),
     headers: requestHeaders,
+  );
+
+  return response;
+}
+
+
+
+
+Future<http.Response> putdataa<T>({
+  required String url,
+  bool isCustomUrl = false,
+  bool addToken = true,
+   T ?body,
+}) async {
+  Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
+
+  String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
+
+  // if (addToken) {
+  //   requestHeaders = appendAccessTokenWith({}, sessionToken);
+  // }
+
+  // else {
+  requestHeaders.addAll({'Authorization': 'Bearer ${sessionToken ?? ""}'});
+  // }
+
+  final response = await client.put(
+    isCustomUrl ? Uri.parse(url) : Uri.parse(baseUrl + url),
+    headers: requestHeaders,
+    body:  jsonEncode(body),
   );
 
   return response;

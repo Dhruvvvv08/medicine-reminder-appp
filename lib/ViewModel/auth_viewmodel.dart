@@ -5,19 +5,22 @@ import 'package:go_router/go_router.dart';
 import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/models/AuthModel/login_model.dart';
+import 'package:healthmvp/services/fcm_services.dart';
 import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/login_screen.dart';
 import 'package:healthmvp/view/Auth/login_screenn.dart';
 import 'package:healthmvp/view/Auth/otp_screen.dart';
 import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:healthmvp/services/socket_service.dart';
 
 class AuthViewmodel extends ChangeNotifier {
   TextEditingController usernamecontroller = TextEditingController();
   TextEditingController passswordcontroller = TextEditingController();
   TextEditingController loginwithotp = TextEditingController();
   bool isotploading = false;
-  bool isTextObscured = false;
+  bool isTextObscured = true;
   bool loginstatus = false;
   bool islogin = false;
   bool resendotp = false;
@@ -62,17 +65,28 @@ class AuthViewmodel extends ChangeNotifier {
       bool success =
           await SharedPref.pref?.setString(Preferences.token, token) ?? false;
       print("Token saved: $success");
+      bool logintrue = await SharedPref.pref!.setBool(Preferences.login, true);
+      print(logintrue);
 
       String id = response.data!.data.id.toString();
       print(id);
       bool sucessid =
           await SharedPref.pref?.setString(Preferences.id, id) ?? false;
       print("id saved: $sucessid");
-      //prefs.setString(Preferences.token,token);
-      //  print("${ SharedPref.pref?.setString(Preferences.token, token)}");
-      islogin = false;
+      await fcmnotificationapi();
 
-      context.go('/bottomnavbar');
+      // Initialize socket connection after successful login and token saving
+      // try {
+      //   final socketService = Provider.of<SocketService>(
+      //     context,
+      //     listen: false,
+      //   );
+
+      islogin = false;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Botoomnavbar(initialIndex: 0)),
+      );
       notifyListeners();
     } else {
       ScaffoldMessenger.of(
@@ -226,6 +240,43 @@ class AuthViewmodel extends ChangeNotifier {
       );
       issignup = false;
       notifyListeners();
+    }
+  }
+
+  //FCM TOKEN////
+
+  bool fcmnotification = false;
+  final fcmtoken = FcmServices();
+
+  Future<bool> fcmnotificationapi() async {
+    fcmnotification = true;
+    notifyListeners();
+
+    try {
+      String fcmtoken = SharedPref.pref!.getString(Preferences.fcmtoken) ?? "";
+      var res = await ApiManager().fcmtoken(fcmtoken: "${fcmtoken}");
+
+      if (res.isSuccessed!) {
+        fcmnotification = false;
+        notifyListeners();
+        return true; // Return success status
+      } else {
+        // if (res.message != null) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content: Text(res.message!)),
+        //   );
+        // }
+        fcmnotification = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      fcmnotification = false;
+      notifyListeners();
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Error: $e')),
+      // );
+      return false;
     }
   }
 }

@@ -34,7 +34,9 @@ class Data {
     String email;
     String phone;
     String role;
-    List<dynamic> dependents;
+    Ent parent;
+    List<Ent> dependents;
+    Subscription subscription;
     NotificationPreferences notificationPreferences;
     String createdAt;
 
@@ -44,7 +46,9 @@ class Data {
         required this.email,
         required this.phone,
         required this.role,
+        required this.parent,
         required this.dependents,
+        required this.subscription,
         required this.notificationPreferences,
         required this.createdAt,
     });
@@ -55,7 +59,9 @@ class Data {
         email: json["email"],
         phone: json["phone"],
         role: json["role"],
-        dependents: List<dynamic>.from(json["dependents"].map((x) => x)),
+        parent: Ent.fromJson(json["parent"]),
+        dependents: List<Ent>.from(json["dependents"].map((x) => Ent.fromJson(x))),
+        subscription: Subscription.fromJson(json["subscription"]),
         notificationPreferences: NotificationPreferences.fromJson(json["notificationPreferences"]),
         createdAt: json["createdAt"],
     );
@@ -66,9 +72,43 @@ class Data {
         "email": email,
         "phone": phone,
         "role": role,
-        "dependents": List<dynamic>.from(dependents.map((x) => x)),
+        "parent": parent.toJson(),
+        "dependents": List<dynamic>.from(dependents.map((x) => x.toJson())),
+        "subscription": subscription.toJson(),
         "notificationPreferences": notificationPreferences.toJson(),
         "createdAt": createdAt,
+    };
+}
+
+class Ent {
+    String id;
+    String name;
+    String email;
+    String phone;
+    String entId;
+
+    Ent({
+        required this.id,
+        required this.name,
+        required this.email,
+        required this.phone,
+        required this.entId,
+    });
+
+    factory Ent.fromJson(Map<String, dynamic> json) => Ent(
+        id: json["_id"],
+        name: json["name"],
+        email: json["email"],
+        phone: json["phone"],
+        entId: json["id"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "_id": id,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "id": entId,
     };
 }
 
@@ -93,5 +133,25 @@ class NotificationPreferences {
         "email": email,
         "push": push,
         "sms": sms,
+    };
+}
+
+class Subscription {
+    String status;
+    String end;
+
+    Subscription({
+        required this.status,
+        required this.end,
+    });
+
+    factory Subscription.fromJson(Map<String, dynamic> json) => Subscription(
+        status: json["status"],
+        end: json["end"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "status": status,
+        "end": end,
     };
 }

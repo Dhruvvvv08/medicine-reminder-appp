@@ -4,6 +4,7 @@ import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
 import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
 import 'package:healthmvp/ViewModel/show_medicine_authmodel.dart';
+import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:provider/provider.dart';
 
 class MedicineScreen extends StatefulWidget {
@@ -47,7 +48,12 @@ class _MedicineScreenState extends State<MedicineScreen> {
                       icon: const Icon(Icons.arrow_back),
                       color: Color(0xff000000),
                       onPressed: () {
-                        context.go('/bottomnavbar');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Botoomnavbar(),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -107,9 +113,6 @@ class MedicineCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: kd5d7ff,
               borderRadius: BorderRadius.circular(8),
-            ),
-            child: Image.network(
-              'http://13.126.206.90:3000/images/tablet.png',
             ),
           ),
           SizedBox(width: 16),

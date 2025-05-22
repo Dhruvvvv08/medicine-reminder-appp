@@ -1,12 +1,14 @@
+// App-level build.gradle.kts (inside android/app)
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services") // ✅ Apply Firebase Google Services plugin
 }
 
 android {
-    namespace = "com.example.healthmvp"
+    namespace = "com.example.healthmvp" // Update this with your actual package name
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,9 +23,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.healthmvp"
-        minSdk = 21 // Make sure this is at least 21
+        applicationId = "com.example.healthmvp" // Make sure this matches your app package
+        minSdk = 23 // Firebase Messaging requires at least API 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -31,21 +32,25 @@ android {
 
     buildTypes {
         getByName("release") {
-              isMinifyEnabled = true
-        isShrinkResources = true
-        proguardFiles(
-            getDefaultProguardFile("proguard-android-optimize.txt"),
-            "proguard-rules.pro"
-        )
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
 dependencies {
+    // Desugaring support for Java 8 features
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // Firebase Messaging library (FCM)
+    implementation("com.google.firebase:firebase-messaging:23.0.0") // ✅ Add Firebase Messaging
 }
 
 flutter {
-    source = "../.."
+    source = "../.." // Path to the Flutter source code (relative to this file)
 }

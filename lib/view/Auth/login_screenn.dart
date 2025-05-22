@@ -139,7 +139,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () {
-                                context.go('/loginwithotp');
+                           
                                 // Navigator.push(
                                 //   context,
                                 //   MaterialPageRoute(

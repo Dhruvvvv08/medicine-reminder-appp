@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:healthmvp/Utils/colors.dart';
+import 'package:healthmvp/view/Auth/auth.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -137,7 +138,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       );
                                     }
                                     : () {
-                                      context.go('/auth');
+                               Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => AuthScreen(),
+                                                ),
+                                              );
                                     },
                               ),
                             ],
@@ -153,7 +159,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               top: 10,
               right: 20,
               child: TextButton(
-                onPressed: () => context.go('/auth'),
+                onPressed: () {
+              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => AuthScreen(),
+                                                ),
+                                              );    
+            },
                 child: const Text(
                   "Skip",
                   style: TextStyle(color: Colors.white),
