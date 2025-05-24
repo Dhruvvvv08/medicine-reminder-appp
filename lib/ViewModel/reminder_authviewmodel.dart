@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:healthmvp/models/remindersmodel/reminder_model.dart';
+import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:intl/intl.dart';
 
@@ -28,6 +29,14 @@ class ReminderAuthviewmodel extends ChangeNotifier {
 
       notifyListeners();
     } else {
+      if (res.message == "Not authorized to access this route") {
+        // Handle unauthorized access
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AuthScreen()),
+        );
+      }
       if (res.message != null) {}
 
       isreminderloading = false;

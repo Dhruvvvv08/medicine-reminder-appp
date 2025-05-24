@@ -28,6 +28,16 @@ class ProfileAuthmodel extends ChangeNotifier {
       if (response.isSuccessed == true) {
         profiledatamodel = response.data;
       } else {
+         if (response.message == "Not authorized to access this route") {
+          // Handle unauthorized access
+          await Future.delayed(const Duration(seconds: 1));
+         Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => AuthScreen(),
+                                                ),
+                                              );
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.message ?? "Failed to load profile"),

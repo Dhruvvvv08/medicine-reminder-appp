@@ -804,13 +804,18 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                                   color: Colors.grey,
                                                 ),
                                                 const SizedBox(width: 8),
-                                                Text(
-                                                  medicineprovider.startdate ==
-                                                          null
-                                                      ? "Select Start Date"
-                                                      : medicineprovider
-                                                          .startdate!,
-                                                ),
+                                               Expanded(
+                                                 child: Text(
+                                                   medicineprovider.startdate == null
+                                                       ? "Select Start Date"
+                                                       : medicineprovider.startdate!,
+                                                   overflow: TextOverflow.ellipsis,
+                                                   maxLines: 1,
+                                                   style: TextStyle(
+                                                     fontWeight: FontWeight.w500,
+                                                   ),
+                                                 ),
+                                               )
                                               ],
                                             ),
                                           ),
@@ -862,12 +867,19 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                                   color: Colors.grey,
                                                 ),
                                                 const SizedBox(width: 8),
-                                                Text(
-                                                  medicineprovider.endate ==
-                                                          null
-                                                      ? "Select End Date"
-                                                      : medicineprovider
-                                                          .endate!,
+                                                Expanded(
+                                                  child: Text(
+                                                    medicineprovider.endate ==
+                                                            null
+                                                        ? "Select End Date"
+                                                        : medicineprovider
+                                                            .endate!,
+                                                             overflow: TextOverflow.ellipsis,
+                                                   maxLines: 1,
+                                                   style: TextStyle(
+                                                     fontWeight: FontWeight.w500,
+                                                   ),
+                                                  ),
                                                 ),
                                               ],
                                             ),

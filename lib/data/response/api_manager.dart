@@ -15,6 +15,7 @@ import 'package:healthmvp/models/profileModel/profilemodel.dart';
 import 'package:healthmvp/models/remindersmodel/reminder_model.dart';
 import 'package:healthmvp/models/remindersmodel/take_reminder.dart';
 import 'package:healthmvp/models/subscriptionModel/subscription_model.dart';
+import 'package:healthmvp/models/userMedicineModel/editmedicinemodel.dart';
 import 'package:healthmvp/models/userMedicineModel/submitaddmedicinemodel.dart';
 import 'package:healthmvp/models/userMedicineModel/usermedicinemodel.dart';
 
@@ -219,7 +220,10 @@ class ApiManager {
       return OnComplete.error("");
     }
   }
-   Future<OnComplete<SubscriptionModel>> getsubsciptiondetails({String? date}) async {
+
+  Future<OnComplete<SubscriptionModel>> getsubsciptiondetails({
+    String? date,
+  }) async {
     try {
       ApiResponse response = await apiRequest(
         request: getdataaa(url: "/subscription"),
@@ -318,6 +322,33 @@ class ApiManager {
 
       if (response.success == true) {
         return OnComplete.success(TakenApiModel.fromJson(response.result));
+      } else {
+        return OnComplete.error(response.message.toString());
+      }
+    } catch (e) {
+      return OnComplete.error(e.toString());
+    }
+  }
+
+  Future<OnComplete<EditMedicineDetails>> editmedicine({
+    medicineid,
+    String? name,
+    String? category,
+    String? dose,
+  }) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: putdataa(
+          body: {"name": name, "dosage": dose, "category": category},
+          // queryParams: query,
+          url: "/medicines/$medicineid",
+        ),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(
+          EditMedicineDetails.fromJson(response.result),
+        );
       } else {
         return OnComplete.error(response.message.toString());
       }

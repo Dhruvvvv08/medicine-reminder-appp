@@ -10,13 +10,36 @@ class FcmServices {
   void setupFcm() async {
     // Initialize Firebase
     await Firebase.initializeApp();
-
     // Request notification permission for iOS (important for iOS)
-    await firebaseMessaging.requestPermission();
+    // await firebaseMessaging.requestPermission();
+    NotificationSettings settings = await firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    String? apnsToken;
+    int retry = 0;
+    while (apnsToken == null && retry < 10) {
+      apnsToken = await firebaseMessaging.getAPNSToken();
+      if (apnsToken == null) {
+        await Future.delayed(const Duration(seconds: 1));
+        retry++;
+      }
+    }
 
+    if (apnsToken == null) {
+      print("❌ Failed to get APNs token after waiting.");
+      return;
+    }
+
+    print("✅ APNs Token: $apnsToken");
     // Get FCM token for device
     String? token = await firebaseMessaging.getToken();
     print("FCM Token: $token");
+    String? apnsTokennn = await firebaseMessaging.getAPNSToken();
+    print("APNs Token: $apnsTokennn");
+    String? apnsTokenn = await FirebaseMessaging.instance.getAPNSToken();
+    print("APNS Token: $apnsTokenn");
     bool success =
         await SharedPref.pref?.setString(
           Preferences.fcmtoken,

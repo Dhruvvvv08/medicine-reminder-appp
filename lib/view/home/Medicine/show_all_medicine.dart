@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthmvp/ViewModel/show_medicine_authmodel.dart';
 import 'package:healthmvp/models/userMedicineModel/usermedicinemodel.dart';
+import 'package:healthmvp/widgets/customdropdown.dart';
 import 'package:provider/provider.dart';
 
 class MedicineListScreen extends StatefulWidget {
@@ -32,10 +33,8 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
 
     final uniqueCategories =
         medicines
-            .map(
-              (m) => m.category ?? '',
-            ) // use property access, not m['category']
-            .where((category) => category.isNotEmpty) // avoid empty ones
+            .map((m) => m.category ?? '')
+            .where((category) => category.isNotEmpty)
             .toSet()
             .toList();
 
@@ -272,9 +271,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                             ),
                                           ),
                                           alignment: Alignment.center,
-
                                           child: Text(
-                                            emojiMap[category.toLowerCase()] ??
+                                            emojiMap[category?.toLowerCase() ??
+                                                    ''] ??
                                                 '💊',
                                             style: const TextStyle(
                                               fontSize: 20,
@@ -292,15 +291,48 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          medicine.name ?? '',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xFF1F2937),
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              medicine.name ?? '',
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFF1F2937),
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                _showEditDialog(medicine);
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 4,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  "Edit",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         const SizedBox(height: 4),
                                         Row(
@@ -313,7 +345,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                                   ),
                                               decoration: BoxDecoration(
                                                 color: _getCategoryColor(
-                                                  category,
+                                                  category!,
                                                 ).withOpacity(0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
@@ -366,4 +398,110 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       ),
     );
   }
+
+  void _showEditDialog(Datum medicine) {
+  final nameController = TextEditingController(text: medicine.name ?? '');
+  final dosageController = TextEditingController(text: medicine.dosage ?? '');
+
+  final availableCategories = [
+    'Tablet',
+    'Capsule',
+    'Syrup',
+    'Injection',
+    'Cream / Ointment / Gel',
+    'Liquid',
+    'Ointment',
+  ];
+
+  // Normalize and match category
+  String categoryNormalized = (medicine.category ?? '').toLowerCase();
+  String matchedCategory = availableCategories.firstWhere(
+    (cat) => cat.toLowerCase() == categoryNormalized,
+    orElse: () => availableCategories.first,
+  );
+
+  String selectedCategory = matchedCategory;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Edit Medicine"),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: dosageController,
+                decoration: const InputDecoration(labelText: 'Dosage'),
+              ),
+              const SizedBox(height: 10),
+              CustomDropdown(
+                data: availableCategories,
+                selectedValue: selectedCategory,
+                onChanged: (value) {
+                  if (value != null) {
+                    selectedCategory = value;
+                  }
+                },
+                hintText: 'Select Category',
+                title: const Text(
+                  'Category',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Montserrat',
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final updatedName = nameController.text.trim();
+              final updatedDosage = dosageController.text.trim();
+              final updatedCategory = selectedCategory;
+
+              if (updatedName.isEmpty || updatedDosage.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please fill all fields")),
+                );
+                return;
+              }
+
+              // Call the API
+              await Provider.of<ShowMedicineAuthmodel>(context, listen: false)
+                  .editmedicinee(
+                    context,
+                    medicine.id ?? '', // Make sure `id` is not null
+                    updatedDosage,
+                    updatedCategory,
+                    updatedName,
+                  );
+
+              // Refresh medicine list after editing
+              await fetchMedicines();
+
+              Navigator.pop(context);
+            },
+            child: const Text("Save"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }
