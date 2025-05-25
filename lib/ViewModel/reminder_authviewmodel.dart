@@ -56,6 +56,9 @@ class ReminderAuthviewmodel extends ChangeNotifier {
       if (res.isSuccessed!) {
         markastaken = false;
         notifyListeners();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Your Medicine is marked as Taken!!")),
+        );
         return true; // Return success status
       } else {
         if (res.message != null) {

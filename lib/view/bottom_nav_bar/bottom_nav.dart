@@ -26,6 +26,7 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
     _pageController = PageController(initialPage: indexxx);
   }
 
+  bool addmedicine = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +72,7 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
                   setState(() {
                     indexxx = 2;
                     _pageController.jumpToPage(2);
+                    addmedicine = true;
                   });
                 },
                 child: Container(
@@ -78,7 +80,10 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
                   height: 48,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF2563EB),
+                    color:
+                        addmedicine
+                            ? const Color(0xFF8B5CF6)
+                            : Color(0xFF2563EB),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.15),
@@ -123,6 +128,7 @@ class _BotoomnavbarState extends State<Botoomnavbar> {
         setState(() {
           indexxx = pageIndex;
           _pageController.jumpToPage(pageIndex);
+          addmedicine = false;
         });
       },
       child: Column(

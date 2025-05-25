@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
 import 'package:healthmvp/ViewModel/auth_viewmodel.dart';
@@ -35,13 +35,11 @@ class _EmailwithotpState extends State<Emailwithotp> {
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios),
                       onPressed: () {
-                  //
-                   Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => AuthScreen(),
-                                                ),
-                                              );
+                        //
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AuthScreen()),
+                        );
                       },
                     ),
                   ],
@@ -140,7 +138,7 @@ class _EmailwithotpState extends State<Emailwithotp> {
 //                     IconButton(
 //                       icon: const Icon(Icons.arrow_back_ios),
 //                       onPressed: () {
-//                      
+//
 //                       },
 //                     ),
 //                   ],

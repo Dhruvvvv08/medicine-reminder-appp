@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:healthmvp/data/response/api_manager.dart';
@@ -34,6 +36,8 @@ class NotificationService {
         playSound: true,
         enableVibration: true,
         enableLights: true,
+        sound: RawResourceAndroidNotificationSound('medicine'),
+        fullScreenIntent: true,
         ledColor: Colors.blue,
         ledOnMs: 1000,
         ledOffMs: 500,
@@ -117,10 +121,12 @@ class NotificationService {
         onDidReceiveNotificationResponse: (
           NotificationResponse response,
         ) async {
-          print('👆 Notification tapped: ${response.payload}');
+          final data = jsonDecode(response.payload.toString());
+          final reminderId = data['reminderId'];
+          print('👆 Notification tapped: $reminderId');
           if (response.actionId == 'TAKEN_ACTION') {
             print('💊 "Taken" button pressed');
-            await markastakenapi(response.payload.toString());
+            await markastakenapi(reminderId.toString());
           }
         },
       );

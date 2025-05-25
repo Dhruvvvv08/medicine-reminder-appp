@@ -17,6 +17,7 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
   DateTime selectedDate = DateTime.now();
   String filterStatus = 'all';
   bool showEmptyState = false;
+  bool markastaken=false;
 
   ReminderAuthviewmodel? reminderauthmodel;
 

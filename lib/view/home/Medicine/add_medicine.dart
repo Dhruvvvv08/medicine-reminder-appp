@@ -2,7 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
 
@@ -28,7 +28,7 @@ class _AddMedicineState extends State<AddMedicine> {
 
   AddmedicineAuthmodel? addmedicineauthmodel;
   final NotificationService _notificationService = NotificationService();
-  late final SocketService _socketService;
+  // late final SocketService _socketService;
   final dropDownKey = GlobalKey<DropdownSearchState>();
   int selectedIndex = 0; // default selected day index
 
@@ -52,7 +52,7 @@ class _AddMedicineState extends State<AddMedicine> {
     _notificationService.initialize();
 
     // Get the global socket instance
-    _socketService = Provider.of<SocketService>(context, listen: false);
+    // _socketService = Provider.of<SocketService>(context, listen: false);
   }
 
   @override
@@ -473,27 +473,27 @@ class _AddMedicineState extends State<AddMedicine> {
                               } else if (medicineprovider.startdate != null &&
                                   medicineprovider.endate != null &&
                                   medicineprovider.selectedTimes.isNotEmpty) {
-                                final socketService =
-                                    Provider.of<SocketService>(
-                                      context,
-                                      listen: false,
-                                    );
-                                if (socketService.isConnected()) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Socket is connected! Sending test event...',
-                                      ),
-                                    ),
-                                  );
-                                  socketService.sendTestEvent();
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Socket is not connected!'),
-                                    ),
-                                  );
-                                }
+                                // final socketService =
+                                // Provider.of<SocketService>(
+                                //   context,
+                                //   listen: false,
+                                // );
+                                // if (socketService.isConnected()) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(
+                                //       content: Text(
+                                //         'Socket is connected! Sending test event...',
+                                //       ),
+                                //     ),
+                                //   );
+                                //   socketService.sendTestEvent();
+                                // } else {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(
+                                //       content: Text('Socket is not connected!'),
+                                //     ),
+                                //   );
+                                // }
                                 medicineprovider.submitaddmedicine(context, {
                                   "medicine_name":
                                       medicineprovider
@@ -540,27 +540,27 @@ class _AddMedicineState extends State<AddMedicine> {
     );
   }
 
-  Widget _buildSocketTestButton() {
-    return ElevatedButton(
-      onPressed: () {
-        final socketService = Provider.of<SocketService>(
-          context,
-          listen: false,
-        );
-        if (socketService.isConnected()) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Socket is connected! Sending test event...'),
-            ),
-          );
-          socketService.sendTestEvent();
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Socket is not connected!')));
-        }
-      },
-      child: Text('Test Socket Connection'),
-    );
-  }
+  //   Widget _buildSocketTestButton() {
+  //     return ElevatedButton(
+  //       onPressed: () {
+  //         final socketService = Provider.of<SocketService>(
+  //           context,
+  //           listen: false,
+  //         );
+  //         if (socketService.isConnected()) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Socket is connected! Sending test event...'),
+  //             ),
+  //           );
+  //           socketService.sendTestEvent();
+  //         } else {
+  //           ScaffoldMessenger.of(
+  //             context,
+  //           ).showSnackBar(SnackBar(content: Text('Socket is not connected!')));
+  //         }
+  //       },
+  //       child: Text('Test Socket Connection'),
+  //     );
+  //   }
 }

@@ -4,11 +4,9 @@ import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/services/notification_helper.dart';
 
 class FcmServices {
-  FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
-  // This method sets up Firebase Cloud Messaging
   void setupFcm() async {
-    // Initialize Firebase
     await Firebase.initializeApp();
     // Request notification permission for iOS (important for iOS)
     // await firebaseMessaging.requestPermission();
@@ -36,21 +34,17 @@ class FcmServices {
     // Get FCM token for device
     String? token = await firebaseMessaging.getToken();
     print("FCM Token: $token");
-    String? apnsTokennn = await firebaseMessaging.getAPNSToken();
-    print("APNs Token: $apnsTokennn");
-    String? apnsTokenn = await FirebaseMessaging.instance.getAPNSToken();
-    print("APNS Token: $apnsTokenn");
     bool success =
         await SharedPref.pref?.setString(
           Preferences.fcmtoken,
           token.toString(),
         ) ??
         false;
-    print("Token saved: $success");
+    print("💾 Token saved in SharedPreferences: $saved");
 
-    // Listen to messages while app is in the foreground
+    // Foreground message handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('🔔 Full FCM Notification Received:\n${message.toMap()}');
+      print('🔔 Received FCM Message: ${message.toMap()}');
 
       if (message.notification != null) {
         NotificationHelper.showNotification(
@@ -61,10 +55,10 @@ class FcmServices {
       }
     });
 
-    // Handle when the user taps the notification
+    // When user taps notification
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('User tapped notification: ${message.data}');
-      // Handle app navigation or other actions on tapping the notification
+      print('📲 Notification tapped: ${message.data}');
+      // Handle navigation or other logic
     });
   }
 }

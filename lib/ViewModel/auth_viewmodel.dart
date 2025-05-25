@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/models/AuthModel/login_model.dart';

@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
 import 'package:healthmvp/ViewModel/dashboard_viewmodel.dart';
@@ -16,6 +16,7 @@ import 'package:healthmvp/firebase_options.dart';
 import 'package:healthmvp/get_data.dart';
 import 'package:healthmvp/services/background_service.dart';
 import 'package:healthmvp/services/fcm_services.dart';
+import 'package:healthmvp/services/notification_helper.dart';
 import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/emailwithotp.dart';
 import 'package:healthmvp/view/Auth/login_screenn.dart';
@@ -31,7 +32,7 @@ import 'package:provider/provider.dart';
 import 'package:healthmvp/ViewModel/auth_viewmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'services/notification_service.dart';
+//import 'services/notification_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:healthmvp/services/socket_service.dart';
 
@@ -51,8 +52,10 @@ void main() async {
   print('Notification permission status: $status');
 
   // Initialize notification service
-  final notificationService = NotificationService();
-  await notificationService.initialize();
+  await NotificationHelper.initialize((reminderId) {
+    print("🧠 You tapped on reminder: $reminderId");
+    // Optional: navigate or update state
+  });
 
   // Create Socket.IO service instance without initializing
   // final socketService = SocketService();

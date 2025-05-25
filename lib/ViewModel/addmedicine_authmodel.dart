@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:healthmvp/models/HomeModel/AddMedicine/MedicineName.dart';
 import 'package:healthmvp/models/userMedicineModel/submitaddmedicinemodel.dart';
 import 'package:healthmvp/services/notification_service.dart';
+import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 
 class AddmedicineAuthmodel extends ChangeNotifier {
   bool getmedicine = false;
@@ -98,7 +98,12 @@ class AddmedicineAuthmodel extends ChangeNotifier {
             duration: Duration(seconds: 3),
           ),
         );
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Botoomnavbar(initialIndex: 1),
+          ),
+        );
         // Reset form
         medicinenamecontroller.clear();
         notecontroller.clear();

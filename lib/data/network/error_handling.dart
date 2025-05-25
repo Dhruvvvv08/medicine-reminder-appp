@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:healthmvp/data/response/api_manager.dart';
 import 'package:healthmvp/data/services/shared_pref_service.dart';
 
@@ -133,7 +133,7 @@ Future<ApiResponse> apiRequest({
               // SharedPref.pref!.remove(Preferences.user);
               // SharedPref.pref!.remove(Preferences.login);
 
-              context?.go('/auth');
+              //   context?.go('/auth');
             } else {}
           } catch (e) {
           } finally {

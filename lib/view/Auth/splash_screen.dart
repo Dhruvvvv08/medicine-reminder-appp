@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/view/Auth/auth.dart';
@@ -67,12 +67,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 3), () {
       if (mounted) {
         if (weatherloggedin == null || !weatherloggedin) {
-     Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => AuthScreen(),
-                                                ),
-                                              );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AuthScreen()),
+          );
 
           // Navigator.pushReplacement(
           //   context,
@@ -81,11 +79,9 @@ class _SplashScreenState extends State<SplashScreen> {
         } else {
           print("Is logged in: $weatherloggedin");
           Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => Botoomnavbar(),
-                                                ),
-                                              );
+            context,
+            MaterialPageRoute(builder: (context) => Botoomnavbar()),
+          );
           // Navigator.pushReplacement(
           //   context,
           //   MaterialPageRoute(builder: (context) => Botoomnavbar()),
