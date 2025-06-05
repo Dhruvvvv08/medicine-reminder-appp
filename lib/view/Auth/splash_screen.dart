@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 3), () {
       if (mounted) {
         if (weatherloggedin == null || !weatherloggedin) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => AuthScreen()),
           );
@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
           // );
         } else {
           print("Is logged in: $weatherloggedin");
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => Botoomnavbar()),
           );

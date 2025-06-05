@@ -144,19 +144,16 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
     return Center(
       child: Container(
         height: 70,
-        width: MediaQuery.of(context).size.width, // Ensure full width
-        padding: EdgeInsets.symmetric(horizontal: 16), // Add horizontal padding
-        child: TabBar(
-          padding: EdgeInsets.zero,
-          labelPadding: EdgeInsets.symmetric(horizontal: 5),
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.black54,
-          indicator: BoxDecoration(),
-          tabs: List.generate(
-            plans.length,
-            (index) => _buildPlanTab(plans[index], index),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: List.generate(
+              plans.length,
+              (index) => _buildPlanTab(plans[index], index),
+            ),
+            spacing: 10,
           ),
         ),
       ),
@@ -168,89 +165,101 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
     final isBestValue = plan.duration.toLowerCase().contains("year");
     final isfirstuser = plan.price.toInt();
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        AnimatedContainer(
-          duration: Duration(milliseconds: 200),
-          margin: EdgeInsets.only(
-            top: 10,
-          ), // adjust margin to leave space for badge
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: isSelected ? Color(0xFF2563EB) : Colors.grey[100],
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color:
-                  isSelected
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey[300]!,
-              width: 1,
+    return GestureDetector(
+      onTap: () {
+        if (plan.price > 0) {
+          setState(() {
+            _selectedPlanIndex = index;
+          });
+        }
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: isSelected ? Color(0xFF2563EB) : Colors.grey[100],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color:
+                    isSelected
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey[300]!,
+                width: 1,
+              ),
             ),
-          ),
-          child: Tab(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   plan.duration,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
                 ),
                 Text(
                   plan.price > 0 ? '₹${plan.price.toInt()}' : 'Free',
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-        if (isBestValue)
-          Positioned(
-            top: 0,
-            right: 0,
-            left: 0,
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  'Best Value',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+          if (isBestValue)
+            Positioned(
+              top: 0,
+              right: 0,
+              left: 0,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'Best Value',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        if (isfirstuser == 0)
-          Positioned(
-            top: 0,
-            right: 0,
-            left: 0,
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.purple,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  'First User',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+          if (isfirstuser == 0)
+            Positioned(
+              top: 0,
+              right: 0,
+              left: 0,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.purple,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'First User',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

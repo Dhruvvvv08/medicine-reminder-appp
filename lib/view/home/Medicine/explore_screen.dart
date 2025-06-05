@@ -17,7 +17,7 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
   DateTime selectedDate = DateTime.now();
   String filterStatus = 'all';
   bool showEmptyState = false;
-  bool markastaken=false;
+  bool markastaken = false;
 
   ReminderAuthviewmodel? reminderauthmodel;
 
@@ -120,7 +120,9 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
           Container(
             padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
             decoration: const BoxDecoration(
-              color: Color(0xFF2563EB),
+              gradient: LinearGradient(
+                colors: [Color(0xFF2563EB), Color.fromARGB(255, 36, 75, 158)],
+              ),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
             ),
             child: Row(

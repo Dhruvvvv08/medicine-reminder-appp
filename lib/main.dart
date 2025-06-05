@@ -17,6 +17,7 @@ import 'package:healthmvp/get_data.dart';
 import 'package:healthmvp/services/background_service.dart';
 import 'package:healthmvp/services/fcm_services.dart';
 import 'package:healthmvp/services/notification_helper.dart';
+import 'package:healthmvp/services/notification_helper_sound.dart';
 import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/emailwithotp.dart';
 import 'package:healthmvp/view/Auth/login_screenn.dart';
@@ -36,6 +37,23 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:healthmvp/services/socket_service.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  final data = message.data;
+  final reminderId = data['reminderId'] ?? '';
+  final title = data['title'] ?? 'Reminder';
+  final body = data['body'] ?? 'Time to take your medicine';
+
+  await NotificationHelper.initialize(); // Ensure initialized in background
+  NotificationHelper.showNotification(
+    title: title,
+    body: body,
+    payload: reminderId,
+  );
+}
+
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   await Firebase.initializeApp(); // Required to handle background messages
 //   print("Handling background message: ${message.messageId}");
@@ -52,19 +70,21 @@ void main() async {
   print('Notification permission status: $status');
 
   // Initialize notification service
-  await NotificationHelper.initialize((reminderId) {
-    print("🧠 You tapped on reminder: $reminderId");
-    // Optional: navigate or update state
-  });
+  // await NotificationHelper.initialize((reminderId) {
+  //   print("🧠 You tapped on reminder: $reminderId");
+  //   // Optional: navigate or update state
+  // });
 
   // Create Socket.IO service instance without initializing
   // final socketService = SocketService();
   SharedPref.pref = await SharedPreferences.getInstance();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationHelper.initialize();
 
   final fcmservice = FcmServices();
   fcmservice.setupFcm();
   // await initializeBackgroundService();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(
     MultiProvider(

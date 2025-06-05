@@ -59,6 +59,7 @@ class _DependentDashboardState extends State<DependentDashboard> {
     final controllerProvider = Provider.of<ProfileAuthmodel>(context);
 
     return Scaffold(
+      // appBar: AppBar(backgroundColor: Color(0xFF2563EB)),
       body:
           controllerProvider.dependentloading == true
               ? Center(child: CircularProgressIndicator())
@@ -73,7 +74,12 @@ class _DependentDashboardState extends State<DependentDashboard> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: const BoxDecoration(
-                            color: Color(0xFF2563EB),
+                            gradient: LinearGradient(
+                              colors: [
+                                Color(0xFF2563EB),
+                                Color.fromARGB(255, 36, 75, 158),
+                              ],
+                            ),
                             borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(30),
                               bottomRight: Radius.circular(30),
@@ -92,14 +98,25 @@ class _DependentDashboardState extends State<DependentDashboard> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          _getGreeting(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_back,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              _getGreeting(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                        SizedBox(height: 10),
                                         Text(
                                           controllerProvider
                                               .dependentdashboard!

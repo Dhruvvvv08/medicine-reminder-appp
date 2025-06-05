@@ -16,7 +16,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     // Initialize notifications when the screen loads
-    NotificationHelper.init();
+   // NotificationHelper.init();
   }
   // NotificationService notificationService = NotificationService();
 
@@ -73,11 +73,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.person_outline,
             text: 'My Account',
             onTap: () {
-              NotificationHelper.scheduleNotification(
-                "Notification test",
-                "my app Notification",
-                5,
-              );
+              // NotificationHelper.scheduleNotification(
+              //   "Notification test",
+              //   "my app Notification",
+              //   5,
+              // );
               //  onCreate();  // Show notification on tap
             },
           ),

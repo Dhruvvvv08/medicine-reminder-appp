@@ -27,6 +27,12 @@ class _ProfileState extends State<Profile> {
   Future<void> _fetchProfileData() async {
     final profileAuthModel = context.read<ProfileAuthmodel>();
     await profileAuthModel.getdashboarddata(context);
+    profileAuthModel.initializeRazorpay();
+  }
+
+  Future<void> fetchrazorpay() async {
+    final razorpayauthmodel = context.read<ProfileAuthmodel>();
+    await razorpayauthmodel.initializeBookingAndPay(context);
   }
 
   @override
@@ -48,7 +54,12 @@ class _ProfileState extends State<Profile> {
                   Container(
                     padding: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                     decoration: BoxDecoration(
-                      color: Color(0xFF2563EB),
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF2563EB),
+                          Color.fromARGB(255, 36, 75, 158),
+                        ],
+                      ),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         bottomRight: Radius.circular(30),
@@ -168,12 +179,17 @@ class _ProfileState extends State<Profile> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    "Subscription Detail's",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF1F2937),
+                                  GestureDetector(
+                                    onTap: () {
+                                      fetchrazorpay();
+                                    },
+                                    child: Text(
+                                      "Subscription Detail's",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1F2937),
+                                      ),
                                     ),
                                   ),
 

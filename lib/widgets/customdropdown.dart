@@ -44,9 +44,9 @@ class CustomDropdown extends StatelessWidget {
             height: 52,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: kf0f9ff,
-              borderRadius: const BorderRadius.all(Radius.circular(4)),
-              border: Border.all(color: const Color(0xff727977), width: 1),
+              color: Colors.grey.shade100,
+              borderRadius: const BorderRadius.all(Radius.circular(16)),
+              //  border: Border.all(color: const Color(0xff727977), width: 1),
             ),
             child: Builder(
               builder: (context) {
@@ -74,7 +74,7 @@ class CustomDropdown extends StatelessWidget {
                     hintStyle: TextStyle(
                       color:
                           showError
-                              ? const Color(0xff2B338C)
+                              ? const Color(0xffffffff)
                               : const Color(0xff79747E),
                       fontSize: 15,
                       overflow: TextOverflow.clip,

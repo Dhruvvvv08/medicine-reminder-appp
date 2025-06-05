@@ -19,7 +19,7 @@ class AddmedicineAuthmodel extends ChangeNotifier {
   MedicneNameModel? medicinemodel;
   SubmitAddApi? submitaddmodel;
 
-  final NotificationService _notificationService = NotificationService();
+//  final NotificationService _notificationService = NotificationService();
   bool _isLoading = false;
 
   Future<void> _scheduleMedicineNotifications(

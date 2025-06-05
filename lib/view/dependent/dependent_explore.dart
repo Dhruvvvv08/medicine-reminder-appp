@@ -118,7 +118,9 @@ class _DependentExporeState extends State<DependentExpore> {
           Container(
             padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
             decoration: const BoxDecoration(
-              color: Color(0xFF2563EB),
+              gradient: LinearGradient(
+                colors: [Color(0xFF2563EB), Color.fromARGB(255, 36, 75, 158)],
+              ),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
             ),
             child: Row(
@@ -415,7 +417,7 @@ class _DependentExporeState extends State<DependentExpore> {
 
   Widget _buildReminderItem(Datum reminder, VoidCallback ontap) {
     final emojiMap = {
-   'tablet': '⚪',
+      'tablet': '⚪',
       'injection': '💉',
       'liquid': '💧',
       'capsule': '💊',

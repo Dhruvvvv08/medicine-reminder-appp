@@ -27,7 +27,7 @@ class _AddMedicineState extends State<AddMedicine> {
   var _formkey = GlobalKey<FormState>();
 
   AddmedicineAuthmodel? addmedicineauthmodel;
-  final NotificationService _notificationService = NotificationService();
+ // final NotificationService _notificationService = NotificationService();
   // late final SocketService _socketService;
   final dropDownKey = GlobalKey<DropdownSearchState>();
   int selectedIndex = 0; // default selected day index
@@ -49,7 +49,7 @@ class _AddMedicineState extends State<AddMedicine> {
       context,
       listen: false,
     );
-    _notificationService.initialize();
+   // _notificationService.initialize();
 
     // Get the global socket instance
     // _socketService = Provider.of<SocketService>(context, listen: false);

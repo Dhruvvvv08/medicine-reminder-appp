@@ -214,7 +214,19 @@ class AuthViewmodel extends ChangeNotifier {
     );
     if (response.isSuccessed!) {
       print("doneeeee");
+String token = response.data!.data.token.toString();
+      print(token);
+      bool success =
+          await SharedPref.pref?.setString(Preferences.token, token) ?? false;
+      print("Token saved: $success");
+      bool logintrue = await SharedPref.pref!.setBool(Preferences.login, true);
+      print(logintrue);
 
+      String id = response.data!.data.id.toString();
+      print(id);
+      bool sucessid =
+          await SharedPref.pref?.setString(Preferences.id, id) ?? false;
+      print("id saved: $sucessid");
       getotploading = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -223,9 +235,9 @@ class AuthViewmodel extends ChangeNotifier {
           duration: const Duration(seconds: 3),
         ),
       );
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => AuthScreen()),
+        MaterialPageRoute(builder: (context) => Botoomnavbar(initialIndex: 0,)),
       );
       issignup = false;
       notifyListeners();

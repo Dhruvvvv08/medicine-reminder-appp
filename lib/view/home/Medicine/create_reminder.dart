@@ -299,7 +299,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
 
   AddmedicineAuthmodel? addmedicineauthmodel;
   ShowMedicineAuthmodel? showmedicinemodell;
-  final NotificationService _notificationService = NotificationService();
+  // final NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
@@ -308,7 +308,7 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
       context,
       listen: false,
     );
-    _notificationService.initialize();
+    //  _notificationService.initialize();
 
     showmedicinemodell = Provider.of<ShowMedicineAuthmodel>(
       context,
@@ -351,7 +351,12 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                   top: 10,
                 ),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF2563EB),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF2563EB),
+                      Color.fromARGB(255, 36, 75, 158),
+                    ],
+                  ),
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30),
@@ -804,18 +809,23 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                                   color: Colors.grey,
                                                 ),
                                                 const SizedBox(width: 8),
-                                               Expanded(
-                                                 child: Text(
-                                                   medicineprovider.startdate == null
-                                                       ? "Select Start Date"
-                                                       : medicineprovider.startdate!,
-                                                   overflow: TextOverflow.ellipsis,
-                                                   maxLines: 1,
-                                                   style: TextStyle(
-                                                     fontWeight: FontWeight.w500,
-                                                   ),
-                                                 ),
-                                               )
+                                                Expanded(
+                                                  child: Text(
+                                                    medicineprovider
+                                                                .startdate ==
+                                                            null
+                                                        ? "Select Start Date"
+                                                        : medicineprovider
+                                                            .startdate!,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -874,11 +884,13 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                                         ? "Select End Date"
                                                         : medicineprovider
                                                             .endate!,
-                                                             overflow: TextOverflow.ellipsis,
-                                                   maxLines: 1,
-                                                   style: TextStyle(
-                                                     fontWeight: FontWeight.w500,
-                                                   ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
                                                   ),
                                                 ),
                                               ],

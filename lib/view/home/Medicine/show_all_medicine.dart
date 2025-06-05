@@ -95,7 +95,10 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
-                color: Color(0xFF2563EB),
+                gradient: LinearGradient(
+                  colors: [Color(0xFF2563EB), Color.fromARGB(255, 36, 75, 158)],
+                ),
+                //  color: Color(0xFF2563EB),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
@@ -430,83 +433,149 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Edit Medicine"),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: dosageController,
-                  decoration: const InputDecoration(labelText: 'Dosage'),
-                ),
-                const SizedBox(height: 10),
-                CustomDropdown(
-                  data: availableCategories,
-                  selectedValue: selectedCategory,
-                  onChanged: (value) {
-                    if (value != null) {
-                      selectedCategory = value;
-                    }
-                  },
-                  hintText: 'Select Category',
-                  title: const Text(
-                    'Category',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Montserrat',
-                      color: Colors.black,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: SizedBox(
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Edit Medicine',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Name Field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        hintText: 'Medicine Name',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+
+                  // Dosage Field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: dosageController,
+                      decoration: const InputDecoration(
+                        hintText: 'Dosage',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Category Dropdown
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Category',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Montserrat',
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      CustomDropdown(
+                        
+                        data: availableCategories,
+                        selectedValue: selectedCategory,
+                        onChanged: (value) {
+                          if (value != null) {
+                            selectedCategory = value;
+                          }
+                        },
+                        hintText: 'Select Category',
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Color(0xFF2563EB)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            Color(0xFF2563EB),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final updatedName = nameController.text.trim();
+                          final updatedDosage = dosageController.text.trim();
+                          final updatedCategory = selectedCategory;
+
+                          if (updatedName.isEmpty || updatedDosage.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Please fill all fields"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          await Provider.of<ShowMedicineAuthmodel>(
+                            context,
+                            listen: false,
+                          ).editmedicineee(
+                            context,
+                            medicine.id ?? '',
+                            updatedDosage,
+                            updatedCategory,
+                            updatedName,
+                          );
+
+                          await fetchMedicines(); // Refresh list
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final updatedName = nameController.text.trim();
-                final updatedDosage = dosageController.text.trim();
-                final updatedCategory = selectedCategory;
-
-                if (updatedName.isEmpty || updatedDosage.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Please fill all fields")),
-                  );
-                  return;
-                }
-
-                // Call the API
-                await Provider.of<ShowMedicineAuthmodel>(
-                  context,
-                  listen: false,
-                ).editmedicineee(
-                  context,
-                  medicine.id ?? '', // Make sure `id` is not null
-                  updatedDosage,
-                  updatedCategory,
-                  updatedName,
-                );
-
-                // Refresh medicine list after editing
-                await fetchMedicines();
-
-                Navigator.pop(context);
-              },
-              child: const Text("Save"),
-            ),
-          ],
         );
       },
     );

@@ -34,8 +34,7 @@ class Data {
     String email;
     String phone;
     String role;
-    Ent parent;
-    List<Ent> dependents;
+    List<Dependent> dependents;
     Subscription subscription;
     NotificationPreferences notificationPreferences;
     String createdAt;
@@ -46,7 +45,6 @@ class Data {
         required this.email,
         required this.phone,
         required this.role,
-        required this.parent,
         required this.dependents,
         required this.subscription,
         required this.notificationPreferences,
@@ -59,8 +57,7 @@ class Data {
         email: json["email"],
         phone: json["phone"],
         role: json["role"],
-        parent: Ent.fromJson(json["parent"]),
-        dependents: List<Ent>.from(json["dependents"].map((x) => Ent.fromJson(x))),
+        dependents: List<Dependent>.from(json["dependents"].map((x) => Dependent.fromJson(x))),
         subscription: Subscription.fromJson(json["subscription"]),
         notificationPreferences: NotificationPreferences.fromJson(json["notificationPreferences"]),
         createdAt: json["createdAt"],
@@ -72,7 +69,6 @@ class Data {
         "email": email,
         "phone": phone,
         "role": role,
-        "parent": parent.toJson(),
         "dependents": List<dynamic>.from(dependents.map((x) => x.toJson())),
         "subscription": subscription.toJson(),
         "notificationPreferences": notificationPreferences.toJson(),
@@ -80,27 +76,27 @@ class Data {
     };
 }
 
-class Ent {
+class Dependent {
     String id;
     String name;
     String email;
     String phone;
-    String entId;
+    String dependentId;
 
-    Ent({
+    Dependent({
         required this.id,
         required this.name,
         required this.email,
         required this.phone,
-        required this.entId,
+        required this.dependentId,
     });
 
-    factory Ent.fromJson(Map<String, dynamic> json) => Ent(
+    factory Dependent.fromJson(Map<String, dynamic> json) => Dependent(
         id: json["_id"],
         name: json["name"],
         email: json["email"],
         phone: json["phone"],
-        entId: json["id"],
+        dependentId: json["id"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -108,7 +104,7 @@ class Ent {
         "name": name,
         "email": email,
         "phone": phone,
-        "id": entId,
+        "id": dependentId,
     };
 }
 
