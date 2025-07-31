@@ -47,14 +47,15 @@ class FcmServices {
     // Foreground message handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('🔔 Received FCM Message: ${message.toMap()}');
-       if (message.notification != null) {
-    NotificationHelper.showNotification(
-      
-      title: message.notification?.title ?? "No Title",
-      body: message.notification?.body ?? "No Body",
-      payload: message.data['reminderId'] ?? "default",
-    );
-  }
+      String type = message.data["type"].toString();
+      if (message.notification != null) {
+        NotificationHelper.showNotification(
+          title: message.notification?.title ?? "No Title",
+          body: message.notification?.body ?? "No Body",
+          payload: message.data['reminderId'] ?? "default",
+          type: type,
+        );
+      }
 
       // if (message.notification != null) {
       //   NotificationHelper.showNotification(

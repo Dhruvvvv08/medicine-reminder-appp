@@ -32,6 +32,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
       listen: false,
     );
     subscriptionautview?.getdashboarddata(context);
+    subscriptionautview?.initializeRazorpay();
     _tabController = TabController(length: 0, vsync: this);
   }
 
@@ -95,7 +96,17 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
           _buildFeaturesList(plans[_selectedPlanIndex]),
           SizedBox(height: 32),
           _buildSubscribeButton(plans[_selectedPlanIndex]),
-          SizedBox(height: 24),
+          SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Text(
+                "None Refundable!",
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -177,6 +188,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
         clipBehavior: Clip.none,
         children: [
           AnimatedContainer(
+            width: 100,
             duration: Duration(milliseconds: 200),
             margin: EdgeInsets.only(top: 10),
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -264,6 +276,11 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
   }
 
   Widget _buildSelectedPlanDetails(SubscriptionType plan) {
+    final bool showOriginalPrice =
+        plan.price > 0 &&
+        plan.discountedPrice != null &&
+        plan.discountedPrice!.toInt() != plan.price.toInt();
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       padding: EdgeInsets.all(16),
@@ -276,21 +293,23 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                plan.price > 0 ? '₹${plan.discountedPrice?.toInt()}' : 'Free',
+                plan.price > 0
+                    ? '₹${plan.discountedPrice?.toInt() ?? plan.price.toInt()}'
+                    : 'Free',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-
                   color: Color(0xFF2563EB),
                 ),
               ),
-              SizedBox(width: 10),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  plan.price > 0 ? '₹${plan.price.toInt()}' : 'Free',
+              if (showOriginalPrice) ...[
+                SizedBox(width: 10),
+                SizedBox(height: 10),
+                Text(
+                  '₹${plan.price.toInt()}',
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
@@ -298,8 +317,9 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
                     color: Color(0xFF2563EB),
                   ),
                 ),
-              ),
+              ],
               SizedBox(width: 4),
+
               Text(
                 '/${plan.duration}',
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -311,23 +331,6 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet>
             '${plan.name} Plan',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          // if (plan.duration.toLowerCase().contains("year"))
-          //   Container(
-          //     margin: EdgeInsets.only(top: 8),
-          //     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          //     decoration: BoxDecoration(
-          //       color: Colors.green.withOpacity(0.1),
-          //       borderRadius: BorderRadius.circular(12),
-          //     ),
-          //     child: Text(
-          //       'Save 33% vs monthly',
-          //       style: TextStyle(
-          //         fontSize: 12,
-          //         color: Colors.green[700],
-          //         fontWeight: FontWeight.w500,
-          //       ),
-          //     ),
-          //   ),
         ],
       ),
     );
@@ -409,15 +412,25 @@ void showSubscriptionSheet(BuildContext context) {
     backgroundColor: Colors.transparent,
     builder: (context) {
       return Container(
-        height: MediaQuery.of(context).size.height * 0.76, // fixed height
+        height: MediaQuery.of(context).size.height * 0.70, // fixed height
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: SubscriptionBottomSheet(
-          onSubscribe: (plan) {
+          onSubscribe: (plan) async {
             print('Selected plan: ${plan.name} - ${plan.duration}');
-            Navigator.pop(context);
+            final provider = Provider.of<SubscriptionModelAuthview>(
+              context,
+              listen: false,
+            );
+            final success = await provider.initializeBookingAndPay(
+              context,
+              plan,
+            );
+            if (success) {
+              Navigator.pop(context);
+            }
           },
           onClose: () => Navigator.pop(context),
         ),

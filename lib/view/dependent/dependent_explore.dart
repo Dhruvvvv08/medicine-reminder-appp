@@ -211,7 +211,25 @@ class _DependentExporeState extends State<DependentExpore> {
                               Icons.chevron_right,
                               color: Color(0xFF2563EB),
                             ),
-                            onPressed: goToNextDay,
+                            onPressed: () {
+                              setState(() {
+                                DateTime today = DateTime.now();
+                                DateTime onlyToday = DateTime(
+                                  today.year,
+                                  today.month,
+                                  today.day,
+                                );
+                                DateTime onlySelected = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                );
+
+                                if (onlySelected.isBefore(onlyToday)) {
+                                  goToNextDay();
+                                }
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -526,27 +544,27 @@ class _DependentExporeState extends State<DependentExpore> {
               reminder.status == 'pending'
                   ? Row(
                     children: [
-                      GestureDetector(
-                        onTap: ontap,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF2563EB),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            "Mark as Taken",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: ontap,
+                      //   child: Container(
+                      //     padding: const EdgeInsets.symmetric(
+                      //       horizontal: 12,
+                      //       vertical: 4,
+                      //     ),
+                      //     decoration: BoxDecoration(
+                      //       color: Color(0xFF2563EB),
+                      //       borderRadius: BorderRadius.circular(12),
+                      //     ),
+                      //     child: Text(
+                      //       "Mark as Taken",
+                      //       style: TextStyle(
+                      //         fontSize: 14,
+                      //         fontWeight: FontWeight.w500,
+                      //         color: Colors.white,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       //  _buildStatusButton(
                       //     icon: Icons.check,
                       //   color: Colors.green,

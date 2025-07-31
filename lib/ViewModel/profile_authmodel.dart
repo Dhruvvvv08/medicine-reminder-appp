@@ -18,7 +18,7 @@ class ProfileAuthmodel extends ChangeNotifier {
   ProfileModelData? profiledatamodel;
   DepedentDashboardDataModel? dependentdashboard;
   String? dependentid;
-
+  bool updateprofileloadng = false;
   Future<void> getdashboarddata(BuildContext context) async {
     profileloading = true;
     notifyListeners();
@@ -50,6 +50,44 @@ class ProfileAuthmodel extends ChangeNotifier {
           duration: const Duration(seconds: 3),
         ),
       );
+    } finally {
+      profileloading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateprofile(
+    BuildContext context,
+    String name,
+    String phone,
+  ) async {
+    profileloading = true;
+    notifyListeners();
+
+    try {
+      final response = await ApiManager().updateprofileinfo({
+        "phone": phone,
+        "name": name,
+      });
+      if (response.isSuccessed == true) {
+        profiledatamodel = response.data;
+      } else {
+        if (response.message == "Not authorized to access this route") {
+          // Handle unauthorized access
+          await Future.delayed(const Duration(seconds: 1));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AuthScreen()),
+          );
+        }
+      }
+    } catch (e) {
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text("Error updating profile: $e"),
+      //     duration: const Duration(seconds: 3),
+      //   ),
+      // );
     } finally {
       profileloading = false;
       notifyListeners();
@@ -183,6 +221,7 @@ class ProfileAuthmodel extends ChangeNotifier {
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
+  bool ispayment = false;
   Future initializeBookingAndPay(
     BuildContext context,
     // required String coachId,
@@ -191,7 +230,8 @@ class ProfileAuthmodel extends ChangeNotifier {
     // required double amount,
   ) async {
     try {
-     //  initializeRazorpay();
+      ispayment = true;
+      //  initializeRazorpay();
       // isLoading.value = true;
       // final userId = StorageService().getId(role: UserRole.endUser).toString();
 
@@ -210,23 +250,21 @@ class ProfileAuthmodel extends ChangeNotifier {
       // currentBooking.value = bookingResponse.data;
 
       // // Create order for payment
-      // final orderResponse = await repository.createOrder(
-      //   amount: amount,
-      //   coachId: coachId,
-      //   userId: userId,
-      // );
+      final orderResponse = await ApiManager().razorpaycreateorder(
+        body: {"amount": 100, "currency": "INR", "receipt": "receipt#1"},
+      );
 
-      // if (!orderResponse.isSuccessed!) {
-      //   throw orderResponse.message ?? "Order creation failed";
-      // }
+      if (!orderResponse.isSuccessed!) {
+        throw orderResponse.message ?? "Order creation failed";
+      }
 
       // Open Razorpay checkout with all payment methods
       final options = {
-        'key': 'rzp_test_ezv4OalaOlix8K', // Your test key
+        'key': 'rzp_test_mBUnGoTInviYkN', // Your test key
         'amount': "60",
         'name': 'HealthMVP',
         'description': 'Coach Consultation',
-        'order_id': "123455",
+        //'order_id': "order_Qj9h3DS6cYV24z",
         'prefill': {'contact': 'USER_PHONE', 'email': 'USER_EMAIL'},
         'theme': {'color': '#157878'},
         // Enable all payment methods

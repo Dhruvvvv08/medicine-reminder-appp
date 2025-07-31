@@ -145,8 +145,51 @@ class _ProfileState extends State<Profile> {
                         // Personal Information Card
                         _buildSectionCard(
                           "Personal Information",
+                          showTitle: false,
                           Column(
                             children: [
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Personal Information",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF1F2937),
+                                        ),
+                                      ),
+                                      TextButton.icon(
+                                        onPressed:
+                                            () => _showEditDialog(
+                                              controllerProvider
+                                                      .profiledatamodel
+                                                      ?.data
+                                                      .name ??
+                                                  'User',
+                                              controllerProvider
+                                                      .profiledatamodel
+                                                      ?.data
+                                                      .phone ??
+                                                  'User',
+                                            ),
+                                        icon: Icon(Icons.edit, size: 16),
+                                        label: Text("Edit"),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Color(0xFF2563EB),
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12),
+                                ],
+                              ),
+
                               _buildInfoItem(
                                 Icons.phone,
                                 "Phone",
@@ -538,6 +581,134 @@ class _ProfileState extends State<Profile> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showEditDialog(String name, String phonenumber) {
+    final namecontroller = TextEditingController(text: name ?? '');
+    final phonenumbercontroller = TextEditingController(
+      text: phonenumber ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: SizedBox(
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Edit Profile',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Name Field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: namecontroller,
+                      decoration: const InputDecoration(
+                        hintText: 'User Name',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Dosage Field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      maxLength: 13,
+                      keyboardType: TextInputType.number,
+                      controller: phonenumbercontroller,
+                      decoration: const InputDecoration(
+                         counterText: '', 
+                        hintText: 'Phone Number',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Category Dropdown
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Color(0xFF2563EB)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            Color(0xFF2563EB),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final updatedName = namecontroller.text.trim();
+                          final updatedPhone =
+                              phonenumbercontroller.text.trim();
+
+                          if (updatedName.isEmpty || updatedPhone.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Please fill all fields"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          await Provider.of<ProfileAuthmodel>(
+                            context,
+                            listen: false,
+                          ).updateprofile(context, updatedName, updatedPhone);
+
+                          await Provider.of<ProfileAuthmodel>(
+                            context,
+                            listen: false,
+                          ).getdashboarddata(context);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

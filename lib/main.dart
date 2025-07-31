@@ -43,6 +43,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   final data = message.data;
   final reminderId = data['reminderId'] ?? '';
+   final type = data['type'] ?? '';
   final title = data['title'] ?? 'Reminder';
   final body = data['body'] ?? 'Time to take your medicine';
 
@@ -51,6 +52,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     title: title,
     body: body,
     payload: reminderId,
+    type: type
   );
 }
 

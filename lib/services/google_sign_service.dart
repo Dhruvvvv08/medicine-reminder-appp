@@ -60,9 +60,12 @@ Future<void> loginn(String firebaseIdToken, BuildContext context) async {
         MaterialPageRoute(builder: (context) => Botoomnavbar(initialIndex: 0)),
       );
     } else {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+      firebaseIdToken = '';
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('${response.message}')));
+      ).showSnackBar(SnackBar(content: Text('Something Went Wrong')));
     }
   } catch (e) {
     print('Error calling backend: $e');

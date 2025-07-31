@@ -213,7 +213,25 @@ class _MedicationReminderScreenState extends State<MedicationReminderScreen> {
                               Icons.chevron_right,
                               color: Color(0xFF2563EB),
                             ),
-                            onPressed: goToNextDay,
+                            onPressed: () {
+                              setState(() {
+                                DateTime today = DateTime.now();
+                                DateTime onlyToday = DateTime(
+                                  today.year,
+                                  today.month,
+                                  today.day,
+                                );
+                                DateTime onlySelected = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                );
+
+                                if (onlySelected.isBefore(onlyToday)) {
+                                  goToNextDay();
+                                }
+                              });
+                            },
                           ),
                         ],
                       ),

@@ -163,6 +163,20 @@ class AuthViewmodel extends ChangeNotifier {
     if (response.isSuccessed!) {
       print(loginwithotp.text.toString());
       print("doneeeee");
+      String token = response.data!.data.token.toString();
+      print(token);
+      bool success =
+          await SharedPref.pref?.setString(Preferences.token, token) ?? false;
+      print("Token saved: $success");
+      bool logintrue = await SharedPref.pref!.setBool(Preferences.login, true);
+      print(logintrue);
+
+      String id = response.data!.data.id.toString();
+      print(id);
+      bool sucessid =
+          await SharedPref.pref?.setString(Preferences.id, id) ?? false;
+      print("id saved: $sucessid");
+      await fcmnotificationapi();
       //   otpModel.value = response.data;
       // token.value=response.data!.data.token;
       // print("tokennnnnnnnn${token}");
@@ -214,7 +228,7 @@ class AuthViewmodel extends ChangeNotifier {
     );
     if (response.isSuccessed!) {
       print("doneeeee");
-String token = response.data!.data.token.toString();
+      String token = response.data!.data.token.toString();
       print(token);
       bool success =
           await SharedPref.pref?.setString(Preferences.token, token) ?? false;
@@ -237,7 +251,7 @@ String token = response.data!.data.token.toString();
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Botoomnavbar(initialIndex: 0,)),
+        MaterialPageRoute(builder: (context) => Botoomnavbar(initialIndex: 0)),
       );
       issignup = false;
       notifyListeners();

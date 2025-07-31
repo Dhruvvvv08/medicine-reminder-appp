@@ -3,14 +3,14 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class RazorPay extends ChangeNotifier{
   late Razorpay _razorpay;
+  RazorPay() {
+    _initializeRazorpay(); // << FIXED
+  }
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   _initializeRazorpay();
-  // }
+
 
   void _initializeRazorpay() {
+  
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
@@ -54,78 +54,86 @@ class RazorPay extends ChangeNotifier{
 
       // Open Razorpay checkout with all payment methods
       final options = {
-        'key': 'rzp_test_ezv4OalaOlix8K', // Your test key
-        'amount': "60",
-        'name': 'HealthMVP',
-        'description': 'Coach Consultation',
-        'order_id': "123455",
-        'prefill': {
-          'contact': 'USER_PHONE',
-          'email': 'USER_EMAIL',
-        },
-        'theme': {
-          'color': '#157878'
-        },
-        // Enable all payment methods
-        'method': {
-          'netbanking': true,
-          'card': true,
-          'upi': true,
-          'wallet': true,
-        },
-        // UPI configuration
-        'upi': {
-          'flow': 'collect',
-          'apps': [
-            'gpay',
-            'phonepe',
-            'paytm',
-            'bhim',
-            'amazonpay'
-          ]
-        },
-        // Card configuration
-        'card': {
-          'emi': false,
-          'network': [
-            'visa',
-            'mastercard',
-            'rupay',
-            'maestro',
-            'amex'
-          ]
-        },
-        // Wallet configuration
-        'wallet': [
-          'paytm',
-          'phonepe',
-          'amazonpay',
-          'freecharge',
-          'mobikwik'
-        ],
-        // Enable netbanking
-        'bank': {
-          'enabled': true
-        },
-        'remember_customer': true,
-        'send_sms_hash': true,
-        'retry': {
-          'enabled': true,
-          'max_count': 3
-        },
-        'external': {
-          'wallets': [
-            'paytm',
-            'phonepe',
-            'amazonpay',
-            'freecharge',
-            'mobikwik'
-          ]
-        },
-        'timeout': 300,
-        'notes': {
-          'user_id': "1jhhj1223jj3jb3455gg8"
-        }
+        'key': 'rzp_test_mBUnGoTInviYkN',
+  'amount': 100,
+  'name': 'Acme Corp.',
+  'description': 'Fine T-Shirt',
+  'prefill': {
+    'contact': '8888888888',
+    'email': 'test@razorpay.com'
+  }
+        // 'key': 'rzp_test_mBUnGoTInviYkN', // Your test key
+        // 'amount': "60",
+        // 'name': 'HealthMVP',
+        // 'description': 'Coach Consultation',
+        // 'order_id': "123455",
+        // 'prefill': {
+        //   'contact': 'USER_PHONE',
+        //   'email': 'USER_EMAIL',
+        // },
+        // 'theme': {
+        //   'color': '#157878'
+        // },
+        // // Enable all payment methods
+        // 'method': {
+        //   'netbanking': true,
+        //   'card': true,
+        //   'upi': true,
+        //   'wallet': true,
+        // },
+        // // UPI configuration
+        // 'upi': {
+        //   'flow': 'collect',
+        //   'apps': [
+        //     'gpay',
+        //     'phonepe',
+        //     'paytm',
+        //     'bhim',
+        //     'amazonpay'
+        //   ]
+        // },
+        // // Card configuration
+        // 'card': {
+        //   'emi': false,
+        //   'network': [
+        //     'visa',
+        //     'mastercard',
+        //     'rupay',
+        //     'maestro',
+        //     'amex'
+        //   ]
+        // },
+        // // Wallet configuration
+        // 'wallet': [
+        //   'paytm',
+        //   'phonepe',
+        //   'amazonpay',
+        //   'freecharge',
+        //   'mobikwik'
+        // ],
+        // // Enable netbanking
+        // 'bank': {
+        //   'enabled': true
+        // },
+        // 'remember_customer': true,
+        // 'send_sms_hash': true,
+        // 'retry': {
+        //   'enabled': true,
+        //   'max_count': 3
+        // },
+        // 'external': {
+        //   'wallets': [
+        //     'paytm',
+        //     'phonepe',
+        //     'amazonpay',
+        //     'freecharge',
+        //     'mobikwik'
+        //   ]
+        // },
+        // 'timeout': 300,
+        // 'notes': {
+        //   'user_id': "1jhhj1223jj3jb3455gg8"
+        // }
       };
 
       print("Opening Razorpay with options: $options"); // Debug log

@@ -257,7 +257,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Image.network(
-                                        "$baseUrl$category",
+                                        "$category",
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
@@ -329,14 +329,28 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                                       color: Colors.grey,
                                                     ),
                                                   ),
-                                                  child: const Text(
-                                                    "Edit",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.edit,
+                                                        size: 16,
+                                                        color: Color(
+                                                          0xFF2563EB,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 5),
+                                                      const Text(
+                                                        "Edit",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Color(
+                                                            0xFF2563EB,
+                                                          ),
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
@@ -417,9 +431,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       'Capsule',
       'Syrup',
       'Injection',
-      'Cream / Ointment / Gel',
       'Liquid',
-      'Ointment',
     ];
 
     // Normalize and match category
@@ -506,7 +518,6 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                       ),
                       const SizedBox(height: 6),
                       CustomDropdown(
-                        
                         data: availableCategories,
                         selectedValue: selectedCategory,
                         onChanged: (value) {

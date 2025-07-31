@@ -12,6 +12,8 @@ import 'package:healthmvp/models/dependent/dependent_model.dart';
 import 'package:healthmvp/models/fcm/fcm_token.dart';
 import 'package:healthmvp/models/profile/linkdependent.dart';
 import 'package:healthmvp/models/profileModel/profilemodel.dart';
+import 'package:healthmvp/models/razorpay/razorpay_verifypayment.dart';
+import 'package:healthmvp/models/razorpay/razorpaypayment.dart';
 import 'package:healthmvp/models/remindersmodel/reminder_model.dart';
 import 'package:healthmvp/models/remindersmodel/take_reminder.dart';
 import 'package:healthmvp/models/subscriptionModel/subscription_model.dart';
@@ -221,6 +223,26 @@ class ApiManager {
     }
   }
 
+ Future<OnComplete<ProfileModelData>> updateprofileinfo(Map body) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: putdataa(
+          body:body,
+          url: "/users/profile"),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(ProfileModelData.fromJson(response.result));
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("");
+    }
+  }
+
   Future<OnComplete<SubscriptionModel>> getsubsciptiondetails({
     String? date,
   }) async {
@@ -407,6 +429,51 @@ class ApiManager {
       if (response.success == true) {
         return OnComplete.success(
           GoogleloginModelApi.fromJson(response.result),
+        );
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("");
+    }
+  }
+
+
+  Future<OnComplete<RazorPayCreateOrderModel>> razorpaycreateorder({
+    required Map body,
+  }) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: postDataa(url: "/subscription/create-payment-order", body: body),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(
+          RazorPayCreateOrderModel.fromJson(response.result),
+        );
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("");
+    }
+  }
+
+  Future<OnComplete<VerifyPayment>> razorpayverifyapi({
+    required Map body,
+  }) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: postDataa(url: "/subscription/verify-payment", body: body),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(
+          VerifyPayment.fromJson(response.result),
         );
       } else {
         return OnComplete.error(

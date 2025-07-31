@@ -667,23 +667,23 @@ class _ModernReminderScreenState extends State<ModernReminderScreen> {
                                             hint: const Text("Select category"),
                                             items: const [
                                               DropdownMenuItem(
-                                                value: 'tablet',
+                                                value: 'Tablet',
                                                 child: Text('Tablet'),
                                               ),
                                               DropdownMenuItem(
-                                                value: 'capsule',
+                                                value: 'Capsule',
                                                 child: Text('Capsule'),
                                               ),
                                               DropdownMenuItem(
-                                                value: 'liquid',
+                                                value: 'Liquid',
                                                 child: Text('Liquid'),
                                               ),
                                               DropdownMenuItem(
-                                                value: 'injection',
+                                                value: 'Injection',
                                                 child: Text('Injection'),
                                               ),
                                               DropdownMenuItem(
-                                                value: 'syrup',
+                                                value: 'Syrup',
                                                 child: Text('Syrup'),
                                               ),
                                             ],
