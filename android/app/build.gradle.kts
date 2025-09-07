@@ -47,8 +47,11 @@ dependencies {
     // Desugaring support for Java 8 features
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 
-    // Firebase Messaging library (FCM)
-    implementation("com.google.firebase:firebase-messaging:23.0.0") // ✅ Add Firebase Messaging
+    // Razorpay or UPI/Wallet integrations
+    implementation("com.google.android.gms:play-services-wallet:19.2.1")
+
+    // Firebase Messaging
+    implementation("com.google.firebase:firebase-messaging:23.0.0")
 }
 
 flutter {

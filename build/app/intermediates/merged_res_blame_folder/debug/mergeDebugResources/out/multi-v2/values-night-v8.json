@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.healthmvp.app-mergeDebugResources-4:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.healthmvp.app-mergeDebugResources-5:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "/Applications/development/healthmvp/android/app/src/main/res/values-night/styles.xml",
+                    "source": "/Applications/medicine-reminder-appp/android/app/src/main/res/values-night/styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "/Users/dhruvmadaan/.gradle/caches/8.10.2/transforms/3a4dcd3e8c92efa77cfa193b658940d9/transformed/appcompat-1.1.0/res/values-night-v8/values-night-v8.xml",
+                    "source": "/Users/abhinavshobhit/.gradle/caches/8.10.2/transforms/8672542fff6e2103c63e7b98b328f638/transformed/appcompat-1.1.0/res/values-night-v8/values-night-v8.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

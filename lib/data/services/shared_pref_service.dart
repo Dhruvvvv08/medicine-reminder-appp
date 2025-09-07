@@ -27,4 +27,5 @@ class Preferences {
   static const String designation = 'designation';
   static const String userid = 'userId';
   static const String fcmtoken = 'fcm_token';
+  static const String role="role";
 }

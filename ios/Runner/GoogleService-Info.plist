@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>631018979560-o6a0hpfltuh9h9vdn6f9rbg4pin856lp.apps.googleusercontent.com</string>
+	<string>631018979560-60tjv8as324kmpn0g6trh9g0mvbhlojh.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.631018979560-o6a0hpfltuh9h9vdn6f9rbg4pin856lp</string>
+	<string>com.googleusercontent.apps.631018979560-60tjv8as324kmpn0g6trh9g0mvbhlojh</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>631018979560-5tsbg6m4i765ot2t7g1l12m0bdik44pe.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.healthmvp</string>
+	<string>com.healthmvp.app</string>
 	<key>PROJECT_ID</key>
 	<string>health-mvp-a0c87</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:631018979560:ios:36ffaf9d6c59cc4f7b495d</string>
+	<string>1:631018979560:ios:201578ae3de9cdf67b495d</string>
 </dict>
 </plist>

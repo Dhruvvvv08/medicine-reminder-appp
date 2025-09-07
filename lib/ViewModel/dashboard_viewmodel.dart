@@ -25,12 +25,10 @@ class DashboardViewmodel extends ChangeNotifier {
         if (response.message == "Not authorized to access this route") {
           // Handle unauthorized access
           await Future.delayed(const Duration(seconds: 1));
-         Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => AuthScreen(),
-                                                ),
-                                              );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AuthScreen()),
+          );
         }
       }
     } catch (e) {

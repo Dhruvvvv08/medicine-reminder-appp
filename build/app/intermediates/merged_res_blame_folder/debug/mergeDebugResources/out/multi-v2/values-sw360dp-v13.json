@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.healthmvp.app-mergeDebugResources-4:/values-sw360dp-v13/values-sw360dp-v13.xml",
+            "outputFile": "com.example.healthmvp.app-mergeDebugResources-5:/values-sw360dp-v13/values-sw360dp-v13.xml",
             "map": [
                 {
-                    "source": "/Users/dhruvmadaan/.gradle/caches/8.10.2/transforms/0098a6e93522fecc805d8900172003dc/transformed/preference-1.2.1/res/values-sw360dp-v13/values-sw360dp-v13.xml",
+                    "source": "/Users/abhinavshobhit/.gradle/caches/8.10.2/transforms/6fec79dfcef552889e3835cc7bab572a/transformed/preference-1.2.1/res/values-sw360dp-v13/values-sw360dp-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

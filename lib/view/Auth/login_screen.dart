@@ -15,7 +15,7 @@ class LoginScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Login')),
       body:
           provider.islogin == true
-              ? Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator(color: Colors.black,))
               : Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(

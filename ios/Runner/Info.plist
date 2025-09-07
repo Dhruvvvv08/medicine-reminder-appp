@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>com.googleusercontent.apps.631018979560-o6a0hpfltuh9h9vdn6f9rbg4pin856lp</string>
+    </array>
+  </dict>
+</array>
+
+<!-- Other required keys -->
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>googlechromes</string>
+  <string>com.googleusercontent.apps.631018979560-o6a0hpfltuh9h9vdn6f9rbg4pin856lp</string>
+</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -14,12 +32,6 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-    <true/>
-    <key>UIBackgroundModes</key>
-    <array>
-	<string>remote-notification</string>
-    </array>
 	<key>CFBundleName</key>
 	<string>healthmvp</string>
 	<key>CFBundlePackageType</key>
@@ -30,6 +42,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -37,6 +51,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

@@ -74,6 +74,10 @@ class AuthViewmodel extends ChangeNotifier {
       print("id saved: $sucessid");
       await fcmnotificationapi();
 
+      String role= response.data!.data.role;
+      bool roletrue= await SharedPref.pref!.setString(Preferences.role, role);
+      print(roletrue);
+
       // Initialize socket connection after successful login and token saving
       // try {
       //   final socketService = Provider.of<SocketService>(
@@ -152,7 +156,7 @@ class AuthViewmodel extends ChangeNotifier {
 
   Future verifyotp(BuildContext context) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userId = SharedPref.pref!.getString(Preferences.id) ?? "";
+    String userId = SharedPref.pref!.getString(Preferences.userid) ?? "";
     getotploading = true;
     notifyListeners();
 
@@ -191,6 +195,7 @@ class AuthViewmodel extends ChangeNotifier {
       );
       notifyListeners();
     } else {
+         SharedPref.pref!.remove(Preferences.id);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(response.message.toString()),

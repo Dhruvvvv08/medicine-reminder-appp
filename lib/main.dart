@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/ViewModel/addmedicine_authmodel.dart';
+import 'package:healthmvp/ViewModel/admin_aurhmodel.dart';
 import 'package:healthmvp/ViewModel/dashboard_viewmodel.dart';
 import 'package:healthmvp/ViewModel/dependent_autmodel.dart';
 import 'package:healthmvp/ViewModel/profile_authmodel.dart';
@@ -99,6 +100,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProfileAuthmodel()),
         ChangeNotifierProvider(create: (_) => DependentAutmodel()),
         ChangeNotifierProvider(create: (_) => SubscriptionModelAuthview()),
+          ChangeNotifierProvider(create: (_) => AdminAurhmodel()),
         //    ChangeNotifierProvider(create: (_) => Providerdemo()),
         // Provider<SocketService>.value(value: socketService),
       ],

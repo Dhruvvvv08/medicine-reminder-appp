@@ -53,87 +53,87 @@ class RazorPay extends ChangeNotifier{
       // }
 
       // Open Razorpay checkout with all payment methods
-      final options = {
-        'key': 'rzp_test_mBUnGoTInviYkN',
-  'amount': 100,
-  'name': 'Acme Corp.',
-  'description': 'Fine T-Shirt',
-  'prefill': {
-    'contact': '8888888888',
-    'email': 'test@razorpay.com'
-  }
-        // 'key': 'rzp_test_mBUnGoTInviYkN', // Your test key
-        // 'amount': "60",
-        // 'name': 'HealthMVP',
-        // 'description': 'Coach Consultation',
-        // 'order_id': "123455",
-        // 'prefill': {
-        //   'contact': 'USER_PHONE',
-        //   'email': 'USER_EMAIL',
-        // },
-        // 'theme': {
-        //   'color': '#157878'
-        // },
-        // // Enable all payment methods
-        // 'method': {
-        //   'netbanking': true,
-        //   'card': true,
-        //   'upi': true,
-        //   'wallet': true,
-        // },
-        // // UPI configuration
-        // 'upi': {
-        //   'flow': 'collect',
-        //   'apps': [
-        //     'gpay',
-        //     'phonepe',
-        //     'paytm',
-        //     'bhim',
-        //     'amazonpay'
-        //   ]
-        // },
-        // // Card configuration
-        // 'card': {
-        //   'emi': false,
-        //   'network': [
-        //     'visa',
-        //     'mastercard',
-        //     'rupay',
-        //     'maestro',
-        //     'amex'
-        //   ]
-        // },
-        // // Wallet configuration
-        // 'wallet': [
-        //   'paytm',
-        //   'phonepe',
-        //   'amazonpay',
-        //   'freecharge',
-        //   'mobikwik'
-        // ],
-        // // Enable netbanking
-        // 'bank': {
-        //   'enabled': true
-        // },
-        // 'remember_customer': true,
-        // 'send_sms_hash': true,
-        // 'retry': {
-        //   'enabled': true,
-        //   'max_count': 3
-        // },
-        // 'external': {
-        //   'wallets': [
-        //     'paytm',
-        //     'phonepe',
-        //     'amazonpay',
-        //     'freecharge',
-        //     'mobikwik'
-        //   ]
-        // },
-        // 'timeout': 300,
-        // 'notes': {
-        //   'user_id': "1jhhj1223jj3jb3455gg8"
-        // }
+      var options = {
+    'key': "rzp_test_t2VvsArc6io7RM",
+    'amount': 100, // in paise
+    'name': 'Thunder Boyzzz',
+    'order_id': "order_Qim2XVRnbzNalS",
+    'timeout': 60, // in seconds
+  
+    
+      // final options = {
+      //   'key': '575hS9Dz6ftJQmO5TzJeWGHK', 
+      //   'amount': "60",
+      //   'name': 'HealthMVP',
+      //   'description': 'Coach Consultation',
+      //   'order_id': "order_Qim2XVRnbzNalS",
+      //   'prefill': {
+      //     'contact': 'USER_PHONE',
+      //     'email': 'USER_EMAIL',
+      //   },
+      //   'theme': {
+      //     'color': '#157878'
+      //   },
+      //   // Enable all payment methods
+      //   'method': {
+      //     'netbanking': true,
+      //     'card': true,
+      //     'upi': true,
+      //     'wallet': true,
+      //   },
+      //   // UPI configuration
+      //   'upi': {
+      //     'flow': 'collect',
+      //     'apps': [
+      //       'gpay',
+      //       'phonepe',
+      //       'paytm',
+      //       'bhim',
+      //       'amazonpay'
+      //     ]
+      //   },
+      //   // Card configuration
+      //   'card': {
+      //     'emi': false,
+      //     'network': [
+      //       'visa',
+      //       'mastercard',
+      //       'rupay',
+      //       'maestro',
+      //       'amex'
+      //     ]
+      //   },
+      //   // Wallet configuration
+      //   'wallet': [
+      //     'paytm',
+      //     'phonepe',
+      //     'amazonpay',
+      //     'freecharge',
+      //     'mobikwik'
+      //   ],
+      //   // Enable netbanking
+      //   'bank': {
+      //     'enabled': true
+      //   },
+      //   'remember_customer': true,
+      //   'send_sms_hash': true,
+      //   'retry': {
+      //     'enabled': true,
+      //     'max_count': 3
+      //   },
+      //   'external': {
+      //     'wallets': [
+      //       'paytm',
+      //       'phonepe',
+      //       'amazonpay',
+      //       'freecharge',
+      //       'mobikwik'
+      //     ]
+      //   },
+      //   'timeout': 300,
+      //   'notes': {
+      //     'user_id': "1jhhj1223jj3jb3455gg8"
+      //   }
       };
 
       print("Opening Razorpay with options: $options"); // Debug log

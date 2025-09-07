@@ -10,7 +10,7 @@ import 'package:http_parser/http_parser.dart';
 //In this file all the API requests are created, we will call these requests for all the APIs
 
 //const String baseUrl = 'https://inspectionapi.austere.biz/inspection/api';
-const String baseUrl = 'http://13.201.104.79:3000/api';
+const String baseUrl = 'http://13.126.72.208:3000/api';
 http.Client client = http.Client();
 // final LocalStorageService _storageService = LocalStorageService();
 
@@ -358,25 +358,29 @@ Future<http.Response> postDataawithtoken<T>({
 //   return response;
 // }
 
-// Future<http.Response> deleteData({
-//   required String url,
-//   String queryParams = "",
-//   required Map body,
-// }) async {
-//   Map<String, String> requestHeaders;
+Future<http.Response> deleteData({
+  required String url,
+ 
+}) async {
+  Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
 
-//   requestHeaders = appendAccessTokenWith({"Content-Type": "application/json"},
-//       _storageService.getUserTokenFromDisk ?? "");
+  String sessionToken = SharedPref.pref!.getString(Preferences.token) ?? "";
 
-//   if (queryParams.isNotEmpty) {
-//     url + queryParams;
-//   }
+  // if (addToken) {
+  //   requestHeaders = appendAccessTokeremovenWith({}, sessionToken);
+  // }
 
-//   final response = await client.delete(Uri.parse(baseUrl + url),
-//       headers: requestHeaders, body: jsonEncode(body));
+  // else {
+  requestHeaders.addAll({'Authorization': 'Bearer ${sessionToken ?? ""}'});
+    
 
-//   return response;
-// }
+
+
+  final response = await client.delete(Uri.parse(baseUrl + url),
+      headers: requestHeaders);
+
+  return response;
+}
 
 Future<http.Response> uploadImageDataAndData({
   required Uint8List imageData,

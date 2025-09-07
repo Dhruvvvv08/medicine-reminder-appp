@@ -1,12 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:healthmvp/ViewModel/profile_authmodel.dart';
+import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/view/Auth/auth.dart';
 import 'package:healthmvp/view/Auth/login_screen.dart';
+import 'package:healthmvp/view/admin/getallusers.dart';
 import 'package:healthmvp/view/bottom_nav_bar/bottom_nav.dart';
 import 'package:healthmvp/view/dependent/dependent_dashboard.dart';
 import 'package:healthmvp/view/subscription/subscription.dart';
 import 'package:healthmvp/widgets/textformfield.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:healthmvp/view/admin/view_all_transactions.dart';
 
 class Profile extends StatefulWidget {
   Profile({Key? key}) : super(key: key);
@@ -21,13 +27,53 @@ class _ProfileState extends State<Profile> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchProfileData();
+      fetchSubscription();
     });
   }
 
+  String? role;
   Future<void> _fetchProfileData() async {
+    role = SharedPref.pref!.getString(Preferences.role) ?? "";
+    print(role);
     final profileAuthModel = context.read<ProfileAuthmodel>();
     await profileAuthModel.getdashboarddata(context);
     profileAuthModel.initializeRazorpay();
+  }
+
+  Future<dynamic> getSubscription() async {
+    final url = Uri.parse("http://13.201.104.79:3000/subscription");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        // Decode JSON response
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception("Failed with status: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error: $e");
+    }
+  }
+
+  dynamic subscriptionData;
+  bool isLoading = true;
+
+  Future<void> fetchSubscription() async {
+    try {
+      final data = await getSubscription();
+      setState(() {
+        subscriptionData = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      debugPrint("Error: $e");
+    }
   }
 
   Future<void> fetchrazorpay() async {
@@ -235,18 +281,21 @@ class _ProfileState extends State<Profile> {
                                       ),
                                     ),
                                   ),
-
-                                  TextButton.icon(
-                                    onPressed:
-                                        () => showSubscriptionSheet(context),
-                                    icon: Icon(Icons.upgrade, size: 16),
-                                    label: Text("Upgrade"),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Color(0xFF2563EB),
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
+                                  if (subscriptionData != null &&
+                                      subscriptionData == "true")
+                                    TextButton.icon(
+                                      onPressed:
+                                          () => showSubscriptionSheet(context),
+                                      icon: const Icon(Icons.upgrade, size: 16),
+                                      label: const Text("Upgrade"),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: const Color(
+                                          0xFF2563EB,
+                                        ),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -342,6 +391,90 @@ class _ProfileState extends State<Profile> {
                         ),
                         SizedBox(height: 20),
 
+                        if (role == "admin")
+                          _buildSectionCard(
+                            "Admin",
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Admin",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1F2937),
+                                      ),
+                                    ),
+                                    // TextButton.icon(
+                                    //   onPressed: () {
+
+                                    //   },
+                                    //   // onPressed:
+                                    //   //     () =>
+                                    //   //     //_showAddDependentDialog(context),
+                                    //   icon: Icon(Icons.add, size: 16),
+                                    //   label: Text("Add"),
+                                    //   style: TextButton.styleFrom(
+                                    //     foregroundColor: Color(0xFF2563EB),
+                                    //     tapTargetSize:
+                                    //         MaterialTapTargetSize.shrinkWrap,
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                                SizedBox(height: 12),
+
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => ViewAllUsersScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Text("View all User"),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ViewAllTransactionsScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Text("View all Transactions"),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            showTitle: false,
+                          ),
+
                         // Logout Button
                         SizedBox(
                           width: double.infinity,
@@ -349,6 +482,24 @@ class _ProfileState extends State<Profile> {
                             onPressed: () => _logout(context),
                             icon: Icon(Icons.logout),
                             label: Text("Logout"),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: Color(0xFFFEE2E2),
+                              foregroundColor: Color(0xFFDC2626),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 0,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () => _delectacc(context),
+                            icon: Icon(Icons.delete),
+                            label: Text("Delect Account"),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 16),
                               backgroundColor: Color(0xFFFEE2E2),
@@ -462,6 +613,16 @@ class _ProfileState extends State<Profile> {
   Future<void> _logout(BuildContext context) async {
     final controllerProvider = context.read<ProfileAuthmodel>();
     await controllerProvider.logoutstatus(context);
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => AuthScreen()),
+      (route) => false,
+    );
+  }
+
+  Future<void> _delectacc(BuildContext context) async {
+    final controllerProvider = context.read<ProfileAuthmodel>();
+    await controllerProvider.delectaccount(context);
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => AuthScreen()),
@@ -641,7 +802,7 @@ class _ProfileState extends State<Profile> {
                       keyboardType: TextInputType.number,
                       controller: phonenumbercontroller,
                       decoration: const InputDecoration(
-                         counterText: '', 
+                        counterText: '',
                         hintText: 'Phone Number',
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(

@@ -7,6 +7,7 @@ import 'package:healthmvp/models/AuthModel/otp_model.dart';
 import 'package:healthmvp/models/AuthModel/register_model.dart';
 import 'package:healthmvp/models/AuthModel/verify_otp_model.dart';
 import 'package:healthmvp/models/HomeModel/AddMedicine/MedicineName.dart';
+import 'package:healthmvp/models/admin/getallusers.dart';
 import 'package:healthmvp/models/dashboard/dashboard.dart';
 import 'package:healthmvp/models/dependent/dependent_model.dart';
 import 'package:healthmvp/models/fcm/fcm_token.dart';
@@ -20,6 +21,7 @@ import 'package:healthmvp/models/subscriptionModel/subscription_model.dart';
 import 'package:healthmvp/models/userMedicineModel/editmedicinemodel.dart';
 import 'package:healthmvp/models/userMedicineModel/submitaddmedicinemodel.dart';
 import 'package:healthmvp/models/userMedicineModel/usermedicinemodel.dart';
+import 'package:healthmvp/models/payment/payment_transaction.dart';
 
 class ApiManager {
   Future<OnComplete<LoginModel>> loginapi(
@@ -48,7 +50,7 @@ class ApiManager {
   Future<OnComplete<OtpModel>> loginwithotp({String? email}) async {
     try {
       ApiResponse response = await apiRequest(
-        request: postDataa(url: "/users/request-otp", body: {"email": email}),
+        request: postDataa(url: "/users/request-otp", body: {"email": email, "isLogin": 1 }),
       );
 
       if (response.success == true) {
@@ -482,6 +484,103 @@ class ApiManager {
       }
     } catch (e) {
       return OnComplete.error("");
+    }
+  }
+  Future<OnComplete<List<ViewallUsersModel>>> getallusers(
+  
+  ) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: getdataaa(url: "/admin/users"),
+      );
+
+      if (response.success == true) {
+        // Check if response.result is a List
+        if (response.result is List) {
+          List<ViewallUsersModel> users = (response.result as List)
+              .map((e) => ViewallUsersModel.fromJson(e))
+              .toList();
+          return OnComplete.success(users);
+        } else {
+          // If it's a single user object, wrap it in a list
+          ViewallUsersModel user = ViewallUsersModel.fromJson(response.result);
+          return OnComplete.success([user]);
+        }
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("Error: $e");
+    }
+  }
+
+   Future<OnComplete<ViewallUsersModel>> delectaccount(
+  
+  ) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: deleteData(url: "/users"),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(
+          ViewallUsersModel.fromJson(response.result),
+        );
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("Error: $e");
+    }
+  }
+
+  Future<OnComplete<bool>> deleteUser(String userId) async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: deleteData(url: "/admin/users/$userId"),
+      );
+
+      if (response.success == true) {
+        return OnComplete.success(true);
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("Error: $e");
+    }
+  }
+
+  Future<OnComplete<List<PaymentTransaction>>> getPaymentTransactions() async {
+    try {
+      ApiResponse response = await apiRequest(
+        request: getdataaa(url: "/admin/payment"),
+      );
+
+      if (response.success == true) {
+        // Check if response.result is a List
+        if (response.result is List) {
+          List<PaymentTransaction> transactions = (response.result as List)
+              .map((e) => PaymentTransaction.fromJson(e))
+              .toList();
+          return OnComplete.success(transactions);
+        } else {
+          // If it's a single transaction object, wrap it in a list
+          PaymentTransaction transaction = PaymentTransaction.fromJson(response.result);
+          return OnComplete.success([transaction]);
+        }
+      } else {
+        return OnComplete.error(
+          response.message.toString() ?? "Service Not Available",
+        );
+      }
+    } catch (e) {
+      return OnComplete.error("Error: $e");
     }
   }
 }

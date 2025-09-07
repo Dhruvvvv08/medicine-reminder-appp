@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:healthmvp/data/services/shared_pref_service.dart';
 import 'package:healthmvp/models/profileModel/profilemodel.dart';
 import 'package:healthmvp/models/dependent/dependent_model.dart';
 import 'package:healthmvp/view/Auth/auth.dart';
+import 'package:http/http.dart' as http;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ProfileAuthmodel extends ChangeNotifier {
@@ -206,6 +209,43 @@ class ProfileAuthmodel extends ChangeNotifier {
     }
   }
 
+  Future<void> delectaccount(BuildContext context) async {
+    islogout = true;
+    notifyListeners();
+
+    try {
+      final response = await ApiManager().delectaccount();
+      if (response.isSuccessed == true) {
+        SharedPref.pref!.setBool(Preferences.login, false);
+        SharedPref.pref!.remove(Preferences.token);
+        await FirebaseAuth.instance.signOut();
+        await GoogleSignIn().signOut();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AuthScreen()),
+        );
+        notifyListeners();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message ?? "Failed to Delect Account"),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error during Account Delection : $e"),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      islogout = false;
+      notifyListeners();
+    }
+  }
+
   late Razorpay _razorpay;
 
   // @override
@@ -356,6 +396,24 @@ class ProfileAuthmodel extends ChangeNotifier {
     //   'External wallet selected: ${response.walletName}',
     //   snackPosition: SnackPosition.BOTTOM,
     // );
+  }
+
+   Future<dynamic> getSubscription() async {
+    final url = Uri.parse("http://13.201.104.79:3000/subscription");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        // Decode JSON response
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception("Failed with status: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error: $e");
+    }
   }
 
   // @override

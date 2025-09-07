@@ -125,13 +125,14 @@ Future<ApiResponse> apiRequest({
               SharedPref.pref!.setBool(Preferences.login, false);
               SharedPref.pref!.remove(Preferences.fcmtoken);
               SharedPref.pref!.remove(Preferences.token);
-              // SharedPref.pref!.remove(Preferences.isUserId);
-              // SharedPref.pref!.remove(Preferences.loginid);
-              // SharedPref.pref!.remove(Preferences.name);
-              // SharedPref.pref!.remove(Preferences.rodeid);
-              // SharedPref.pref!.remove(Preferences.tokenn);
-              // SharedPref.pref!.remove(Preferences.user);
-              // SharedPref.pref!.remove(Preferences.login);
+              SharedPref.pref!.remove(Preferences.isUserId);
+              SharedPref.pref!.remove(Preferences.id);
+              SharedPref.pref!.remove(Preferences.loginid);
+              SharedPref.pref!.remove(Preferences.name);
+              SharedPref.pref!.remove(Preferences.rodeid);
+              SharedPref.pref!.remove(Preferences.tokenn);
+              SharedPref.pref!.remove(Preferences.user);
+              SharedPref.pref!.remove(Preferences.login);
 
               //   context?.go('/auth');
             } else {}

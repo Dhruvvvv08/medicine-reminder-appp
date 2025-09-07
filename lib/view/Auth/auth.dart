@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:healthmvp/Utils/colors.dart';
 import 'package:healthmvp/Utils/textstyles.dart';
 import 'package:healthmvp/ViewModel/auth_viewmodel.dart';
+import 'package:healthmvp/services/apple_sign_in.dart';
 import 'package:healthmvp/services/google_sign_service.dart';
 import 'package:healthmvp/view/Auth/emailwithotp.dart';
 import 'package:healthmvp/view/Auth/signup_screen.dart';
@@ -80,7 +83,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "Welcome Back",
+                                          "Welcome",
                                           style: u_30_500_k000000,
                                         ),
 
@@ -193,86 +196,57 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ),
                                         const SizedBox(height: 24),
                                         Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Expanded(
-                                              child: Divider(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8.0,
-                                                  ),
-                                              child: Text(
-                                                'Or Sign in With',
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                ),
-                                              ),
-                                            ),
-                                            const Expanded(
-                                              child: Divider(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 24),
-                                        Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            InkWell(
-                                              onTap: () async {
-                                                signInWithGoogleAndCallBackend(
-                                                  context,
-                                                );
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xfff0f9fc),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    8,
+                                            if (Platform.isAndroid) ...[
+                                              InkWell(
+                                                onTap: () async {
+                                                  signInWithGoogleAndCallBackend(
+                                                    context,
+                                                  );
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                      0xfff0f9fc,
+                                                    ),
                                                   ),
-                                                  child: const Icon(
-                                                    Icons.g_mobiledata,
-                                                    size: 25,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 8),
-                                            InkWell(
-                                              onTap: () async {
-                                                final Uri url = Uri.parse(
-                                                  'https://www.apple.com',
-                                                );
-                                                // if (!await launchUrl(url)) {
-                                                //   throw Exception('Could not launch $url');
-                                                // }
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xfff0f9fc),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    8,
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.apple,
-                                                    size: 25,
+                                                  child: const Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Icon(
+                                                      Icons.g_mobiledata,
+                                                      size: 25,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
+                                            if (Platform.isIOS) ...[
+                                              InkWell(
+                                                onTap: () async {
+                                                  await signInWithAppleAndCallBackend(
+                                                    context,
+                                                  );
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                      0xfff0f9fc,
+                                                    ),
+                                                  ),
+                                                  child: const Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Icon(
+                                                      Icons.apple,
+                                                      size: 25,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ],
                                         ),
                                         const SizedBox(height: 20),
